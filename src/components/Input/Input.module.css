@@ -1,14 +1,13 @@
 .input {
     height: 44px;
+    width: 400px;
     padding: 10px 270px 10px 12px;
-    margin-top: 4px;
     box-sizing: border-box;
     border: 1.5px solid #D4D4D7;
     border-radius: 8px;
     background-color: white;
 }
 .input:focus{
-    width: 100%;
     border: 1.5px solid #D4D4D7;
     outline: none;
 }
