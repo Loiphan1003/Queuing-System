@@ -3,6 +3,7 @@ import LoginImage from '../../assets/images/loginImage.svg';
 import LogoAlta from '../../assets/images/Logo_alta.svg';
 import warning from '../../assets/images/warning.svg';
 import styles from './index.module.css'
+import { useNavigate } from 'react-router-dom';
 import { PasswordInput, Input } from '../../components';
 
 type Account = {
@@ -13,6 +14,7 @@ type Account = {
 
 export const Login = () => {
 
+    const navigate = useNavigate();
     const [account, setAccount] = useState<Account | null>(null);
     const [isCorrect, setIsCorrect] = useState(true)
 
@@ -20,7 +22,8 @@ export const Login = () => {
         if(account === null || account.userName === undefined || account.password === undefined){
             return setIsCorrect(false);
         }
-        // console.log(account);
+        if(account.userName === "Loiphan" && account.password === "1234")
+            return navigate('/trangchu')
     }
 
     return (
@@ -64,12 +67,12 @@ export const Login = () => {
                         </div>
                     }
                     
-                    {isCorrect && <a href='/' className={styles.forgotPass}>Quên mật khẩu ?</a>}
+                    {isCorrect && <a href='/quenmatkhau' className={styles.forgotPass}>Quên mật khẩu ?</a>}
                     <div className={styles.loginBtn}>
                         <div onClick={handleClick} >
                             <p>Đăng nhập</p>
                         </div>
-                        {isCorrect !== true && <a href='/' className={styles.forgotPass}>Quên mật khẩu ?</a>}
+                        {isCorrect !== true && <a href='/quenmatkhau' className={styles.forgotPass}>Quên mật khẩu ?</a>}
                     </div>
 
                 </div>
