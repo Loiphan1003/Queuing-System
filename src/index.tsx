@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import { DefaultLayout } from './layouts';
-import { ErrorPage, Login, ForgotPassword, Home, Dashboard, Devices } from './views';
+import { ErrorPage, Login, ForgotPassword, Home, Dashboard, Devices, Service, CapSo, Report } from './views';
 import store from './store/store';
 import { Provider } from 'react-redux/es/exports';
 
@@ -32,6 +32,18 @@ const router = createBrowserRouter([
   {
     path: "/thietbi",
     element: <DefaultLayout> <Devices/> </DefaultLayout>
+  },
+  {
+    path: "/dichvu",
+    element: <DefaultLayout><Service/></DefaultLayout>
+  },
+  {
+    path: "/capso",
+    element: <DefaultLayout><CapSo/></DefaultLayout>
+  },
+  {
+    path: "/baocao",
+    element: <DefaultLayout><Report/></DefaultLayout>
   }
 ])
 

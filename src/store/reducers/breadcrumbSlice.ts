@@ -1,17 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
-import React from 'react'
 
-type stateModel = {
+export type stateModel = {
     title: string,
     path: string
 }
 
 type BreadcrumState = {
-    value: stateModel[]
+    value: stateModel[] 
 }
 
 const initialState: BreadcrumState = {
-    value: []
+    value: [] 
 }
 
 export const breadcrumSlice = createSlice({
@@ -23,10 +22,13 @@ export const breadcrumSlice = createSlice({
         },
         changeValue: (state, action) => {
             state.value = action.payload
+        },
+        clearValue: (state, action) => {
+            state.value = []
         }
     }
 })
 
-export const { addValue, changeValue } = breadcrumSlice.actions
+export const { addValue, changeValue, clearValue } = breadcrumSlice.actions
 
 export default breadcrumSlice.reducer;

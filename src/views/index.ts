@@ -4,3 +4,6 @@ export * from './Login'
 export * from './Home'
 export * from './Dashboard'
 export * from './Devices';
+export * from './Service';
+export * from './CapSo';
+export * from './Report';

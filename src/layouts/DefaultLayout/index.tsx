@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styles from './defaultLayout.module.css'
 import { Menubar, Notification } from '../../components'
 import AvatarTest from '../../assets/images/avatar_test.svg';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { addValue, changeValue } from '../../store/reducers/breadcrumbSlice';
+import { addValue, changeValue, clearValue } from '../../store/reducers/breadcrumbSlice';
 
 type DefaultLayoutProps = {
   children: React.ReactNode,
@@ -18,7 +18,7 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [selectMenubar, setSelectMenubar] = useState<{} | null>()
+  // const [selectMenubar, setSelectMenubar] = useState<{} | null>()
   const [notificationClick, setNotificationClick] = useState<boolean>(false)
 
   // useEffect(() => {
@@ -39,7 +39,6 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
         }]
         dispatch(changeValue(temp));
       }
-      // navigate(path)
       return navigate(path);
     }
     else{
@@ -95,7 +94,7 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
             <div 
               className={styles.userInfoBtn}
               onClick={() => {
-                dispatch(changeValue([]))
+                dispatch(clearValue([]))
                 navigate('/trangchu')
               }}
             >
