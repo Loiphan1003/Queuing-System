@@ -1,11 +1,11 @@
 import React from 'react'
 import styles from './inputTypeDisable.module.css'
 
-type InputTypeDisable = {
+type InputTypeDisableType = {
     value: string
 }
 
-export const InputTypeDisable = (props: InputTypeDisable) => {
+export const InputTypeDisable = (props: InputTypeDisableType) => {
   return (
     <>
         <div className={styles.input} >

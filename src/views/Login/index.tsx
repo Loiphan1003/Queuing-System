@@ -1,10 +1,12 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import LoginImage from '../../assets/images/loginImage.svg';
 import LogoAlta from '../../assets/images/Logo_alta.svg';
 import warning from '../../assets/images/warning.svg';
 import styles from './index.module.css'
 import { useNavigate } from 'react-router-dom';
 import { PasswordInput, Input } from '../../components';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from '../../config/firebase';
 
 type Account = {
     userName: string | undefined,
@@ -12,18 +14,40 @@ type Account = {
 }
 
 
+const setCookie = (name: string, value: any, day: number) => {
+    let expires = "";
+    if (day) {
+        const date = new Date();
+        date.setTime(date.getTime() + (day * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
 export const Login = () => {
 
     const navigate = useNavigate();
     const [account, setAccount] = useState<Account | null>(null);
     const [isCorrect, setIsCorrect] = useState(true)
 
-    const handleClick = () => {
-        if(account === null || account.userName === undefined || account.password === undefined){
+    const handleClick = async () => {
+        if (account === null || account.userName === undefined || account.password === undefined) {
             return setIsCorrect(false);
         }
-        if(account.userName === "Loiphan" && account.password === "1234")
+
+        let isLogin: string = '';
+        const q = query(collection(db, "accounts"), where("username", "==", account.userName), where("password", "==", account.password));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            isLogin = doc.id;
+        });
+
+        if (isLogin !== '') {
+            setCookie("isLogin", isLogin, 1);
             return navigate('/trangchu')
+        }
+        return
     }
 
     return (
@@ -35,9 +59,11 @@ export const Login = () => {
                         <img src={LogoAlta} alt="logo alta" />
                     </div>
                     <div className={styles.username}>
-                        <label className={styles.label}  htmlFor="name">Tên đăng nhập *</label>
-                        <Input 
+                        <label className={styles.label} htmlFor="name">Tên đăng nhập *</label>
+                        <Input
                             status={isCorrect}
+                            placeholder=''
+                            value=''
                             handleChange={(e) => {
                                 setAccount({
                                     userName: e.target.value,
@@ -47,7 +73,7 @@ export const Login = () => {
                         />
                     </div>
 
-                    <div  className={styles.password}>
+                    <div className={styles.password}>
                         <label className={styles.label} htmlFor="password">Mật khẩu *</label>
 
                         <PasswordInput
@@ -60,13 +86,13 @@ export const Login = () => {
                             }
                         />
                     </div>
-                    {isCorrect !== true && 
+                    {isCorrect !== true &&
                         <div className={styles.warning} >
                             <img src={warning} alt="warning icon" />
                             <p>Sai mật khẩu hoặc tên đăng nhập</p>
                         </div>
                     }
-                    
+
                     {isCorrect && <a href='/quenmatkhau' className={styles.forgotPass}>Quên mật khẩu ?</a>}
                     <div className={styles.loginBtn}>
                         <div onClick={handleClick} >

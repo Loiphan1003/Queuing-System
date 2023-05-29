@@ -27,6 +27,8 @@ export const ForgotPassword = () => {
                     <p>Vui lòng nhập email để đặt lại mật khẩu của bạn *</p>
                     <Input
                         status={true}
+                        placeholder=''
+                        value=''
                         handleChange={(e) => setInputPassword(e.target.value)}
                     />
 

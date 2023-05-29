@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import breadcrumSlice from "./reducers/breadcrumbSlice";
+import devicesSlice from "./reducers/devicesSlice";
 
 const store = configureStore({
     reducer: {
-        breadcrumb: breadcrumSlice
+        breadcrumb: breadcrumSlice,
+        device: devicesSlice
     }
 })
 

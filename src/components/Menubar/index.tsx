@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import AltaLogo from '../../assets/images/Logo_alta.svg';
 import DashboardIcon from '../../assets/images/dashboard_icon.svg';
 import MonitorIcon from '../../assets/images/monitor_icon.svg';
@@ -9,10 +9,10 @@ import SettingIcon from '../../assets/images/setting_icon.svg';
 import MoreIcon from '../../assets/images/fi_more-vertical.svg'
 import LogoutIcon from '../../assets/images/fi_log-out.svg';
 import styles from './Menubar.module.css'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { stateModel } from '../../store/reducers/breadcrumbSlice';
+import { stateModel } from '../../types';
 
 type MenuBarProps = {
     onClick: (name: string, path: string) => void
@@ -48,13 +48,14 @@ const menubar = [
 
 
 const checkIsSelect = (array: stateModel[], text: string) => {
+    let checked = true
     array.map((item) => {
-        console.log(item.title === text)
-        if(item.title !== text){
-            return false;
+        if (item.title !== text) {
+            checked = false;
         }
+        return checked;
     })
-    return true;
+    return checked;
 }
 
 
@@ -63,17 +64,33 @@ export const Menubar = (props: MenuBarProps) => {
     const navigate = useNavigate();
     const state = useSelector((state: RootState) => state.breadcrumb.value)
 
-    const [selected, setSelected] = useState<string| null> (null);
+    const location = useLocation()
+    const [selected, setSelected] = useState<string>("");
 
-    useEffect(() => {
-       if(state.length === 0) return setSelected(null)
-    }, [state])
-    
     const handleClick = (array: stateModel[], text: string) => {
-        if(checkIsSelect(array,text) ) return setSelected(text)
-        else return setSelected(null)
+        if (checkIsSelect(array, text)) return setSelected(text)
+        else return setSelected('')
     }
 
+    const getLocation = useCallback(() => {
+        const getUrlLocationPathName = location.pathname;
+        menubar.forEach(item => {
+            if (item.path === getUrlLocationPathName) return setSelected(item.text)
+        })
+    }, [location.pathname])
+
+    useEffect(() => {
+        if (state.length === 0) return setSelected('')
+    }, [state])
+
+    useEffect(() => {
+        getLocation()
+    }, [getLocation])
+
+    const handleLogout = () => {
+        document.cookie = "isLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        navigate('/')
+    }
 
     return (
         <div className={styles.container}>
@@ -83,11 +100,11 @@ export const Menubar = (props: MenuBarProps) => {
 
                 <div className={styles.listBtn}>
                     {menubar.map(item => (
-                        <div 
-                            key={item.text} 
+                        <div
+                            key={item.text}
                             className={selected === item.text ? styles.btnActive : styles.btn}
                             onClick={() => {
-                                props.onClick(item.text, item.path) 
+                                props.onClick(item.text, item.path)
                                 handleClick(state, item.text)
                             }}
                         >
@@ -96,7 +113,10 @@ export const Menubar = (props: MenuBarProps) => {
                         </div>
                     ))}
 
-                    <div className={styles.btn}>
+                    <div 
+                        className={styles.btn}
+                        // onClick={() => han}
+                    >
                         <img src={SettingIcon} alt="setting icon" />
                         <p>Cài đặt hệ thống</p>
                         <img src={MoreIcon} alt="more icon" />
@@ -104,9 +124,9 @@ export const Menubar = (props: MenuBarProps) => {
                 </div>
             </div>
 
-            <div 
-                className={styles.logoutBtn} 
-                onClick={() => navigate('/')}
+            <div
+                className={styles.logoutBtn}
+                onClick={() => handleLogout()}
             >
                 <img src={LogoutIcon} alt="logout icon" />
                 <p>Đăng xuất</p>

@@ -1,9 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { stateModel } from '../../types';
 
-export type stateModel = {
-    title: string,
-    path: string
-}
 
 type BreadcrumState = {
     value: stateModel[] 

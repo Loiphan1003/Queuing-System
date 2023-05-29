@@ -1,56 +1,135 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import styles from './defaultLayout.module.css'
 import { Menubar, Notification } from '../../components'
 import AvatarTest from '../../assets/images/avatar_test.svg';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { addValue, changeValue, clearValue } from '../../store/reducers/breadcrumbSlice';
+import { stateModel } from '../../types';
+// import { collection, query, where, getDocs } from "firebase/firestore";
+// import { db } from '../../config/firebase';
+
 
 type DefaultLayoutProps = {
   children: React.ReactNode,
 }
 
-export const DefaultLayout = (props: DefaultLayoutProps) => {
+const breadcrumbData = [
+  {
+    path: '/thongke',
+    data: [{
+      title: "Dashboard",
+      path: '/thongke'
+    }]
+  },
+  {
+    path: '/thietbi',
+    data: [{
+      title: "Thiết bị",
+      path: ''
+    }, {
+      title: "Danh sách thiết bị",
+      path: '/thietbi'
+    }]
+  },
+  {
+    path: '/dichvu',
+    data: [{
+      title: "Dịch Vụ",
+      path: ''
+    }, {
+      title: "Danh sách dịch vụ",
+      path: '/dichvu'
+    }]
+  },
+  {
+    path: '/baocao',
+    data: [{
+      title: "Báo cáo",
+      path: ''
+    }, {
+      title: "Lập báo cáo",
+      path: '/baocao'
+    }]
+  },
+  {
+    path: '/capso',
+    data: [{
+      title: "Cấp số",
+      path: ""
+    }, {
+      title: "Danh sách cấp số",
+      path: '/capso'
+    }]
+  },
+] as { path: string, data: stateModel[] }[]
 
+export const DefaultLayout = (props: DefaultLayoutProps) => {
 
   const state = useSelector((state: RootState) => state.breadcrumb.value)
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const [selectMenubar, setSelectMenubar] = useState<{} | null>()
+
+  const location = useLocation();
+
   const [notificationClick, setNotificationClick] = useState<boolean>(false)
 
-  // useEffect(() => {
-  //   console.log(state);
-  // }, [state])
+  const getCookie = (name: string) => {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length === 2) {
+      return parts.pop()?.split(";").shift();
+    }
+    return null;
+  };
 
-  const handleClickMenu = (name: string, path: string) => {
-    let temp = [];
-    if (state.length === 0) {
-      if (name === "Dashboard") 
-        dispatch(addValue({ title: name, path }));
-      if (name === "Thiết bị") {
-        temp = [{
-          title: name,
-        },
-        {
-          title: "Danh sách thiết bị"
-        }]
-        dispatch(changeValue(temp));
-      }
-      return navigate(path);
+  useEffect(() => {
+    const result = getCookie('isLogin')
+    if (result === null) return navigate('/');
+    return;
+  }, [navigate])
+
+  const handleClickMenu = useCallback((name: string, path: string) => {
+    let temp = [] as { title: string, path: string }[];
+    if (name === "Dashboard")
+      dispatch(addValue({ title: name, path }));
+    if (name === "Thiết bị") {
+      temp = [{
+        title: name,
+        path: ''
+      },
+      {
+        title: "Danh sách thiết bị",
+        path: '/thietbi'
+      }]
     }
-    else{
-      dispatch(changeValue([{title: name, path}]))
-      navigate(path)
+    if (name === "Cấp số") {
+      temp = [{ title: "Cấp số" }, { title: "Danh sách cấp số", path: '/capso' }] as { title: string, path: string }[];
     }
-    // dispatch(addValue({ title: name, path }));
-  }
+
+    dispatch(changeValue(temp));
+    return navigate(path);
+
+  }, [dispatch, navigate])
 
   const handleClickNotification = () => {
     setNotificationClick(!notificationClick);
   }
+
+  const getLocation = useCallback(() => {
+    const urlPathName = location.pathname;
+    breadcrumbData.forEach((item) => {
+      if (item.path === urlPathName) {
+        return dispatch(changeValue(item.data))
+      }
+    })
+  }, [location.pathname, dispatch])
+
+  useEffect(() => {
+    getLocation()
+  }, [getLocation])
 
   return (
     <div className={styles.container}>
@@ -91,7 +170,7 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
               </svg>
             </div>
 
-            <div 
+            <div
               className={styles.userInfoBtn}
               onClick={() => {
                 dispatch(clearValue([]))
