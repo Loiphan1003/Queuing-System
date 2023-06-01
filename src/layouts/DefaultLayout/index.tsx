@@ -6,7 +6,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { addValue, changeValue, clearValue } from '../../store/reducers/breadcrumbSlice';
-import { stateModel } from '../../types';
+import { account, stateModel } from '../../types';
+import { getCookie } from '../../utils';
+import { getDocumentWithId } from '../../config/firebase/firestore';
+import { changeAccountLogin } from '../../store/reducers/accountSlice';
 // import { collection, query, where, getDocs } from "firebase/firestore";
 // import { db } from '../../config/firebase';
 
@@ -63,6 +66,16 @@ const breadcrumbData = [
       path: '/capso'
     }]
   },
+  {
+    path: '/taikhoan',
+    data: [{
+      title: "Cài đặt hệ thống",
+      path: ''
+    }, {
+      title: "Quản lý tài khoản",
+      path: '/taikhoan'
+    }]
+  }
 ] as { path: string, data: stateModel[] }[]
 
 export const DefaultLayout = (props: DefaultLayoutProps) => {
@@ -75,21 +88,13 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
   const location = useLocation();
 
   const [notificationClick, setNotificationClick] = useState<boolean>(false)
+  const [openSetting, setOpenSetting] = useState<boolean>(false)
 
-  const getCookie = (name: string) => {
-    const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
-    if (parts.length === 2) {
-      return parts.pop()?.split(";").shift();
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    const result = getCookie('isLogin')
-    if (result === null) return navigate('/');
-    return;
-  }, [navigate])
+  // useEffect(() => {
+  //   const result = getCookie('isLogin')
+  //   if (result === null) return navigate('/');
+  //   return;
+  // }, [navigate])
 
   const handleClickMenu = useCallback((name: string, path: string) => {
     let temp = [] as { title: string, path: string }[];
@@ -108,11 +113,22 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
     if (name === "Cấp số") {
       temp = [{ title: "Cấp số" }, { title: "Danh sách cấp số", path: '/capso' }] as { title: string, path: string }[];
     }
+    if (name.includes("Cài đặt")) return setOpenSetting(true);
 
+    setOpenSetting(false)
     dispatch(changeValue(temp));
     return navigate(path);
 
   }, [dispatch, navigate])
+
+
+  const handleClickOpenSetting = (name: string, path: string) => {
+    const temp = [{ title: "Cài đặt hệ thống", path: '' }] as { title: string, path: string }[];
+    temp.push({ title: name, path })
+    setOpenSetting(false);
+    navigate(path);
+    dispatch(changeValue(temp));
+  }
 
   const handleClickNotification = () => {
     setNotificationClick(!notificationClick);
@@ -127,6 +143,17 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
     })
   }, [location.pathname, dispatch])
 
+  const infoAccountLoginWithId = useCallback(async () => {
+    const res = getCookie('isLogin')
+    if (res === null || res === undefined) return navigate('/');
+    const accountInfo = await getDocumentWithId(res, 'accounts') as account;
+    if (accountInfo?.id === undefined) return navigate('/');
+    console.log(accountInfo);
+    dispatch(changeAccountLogin(accountInfo))
+  }, [dispatch, navigate])
+
+  useEffect(() => { infoAccountLoginWithId() }, [infoAccountLoginWithId])
+
   useEffect(() => {
     getLocation()
   }, [getLocation])
@@ -134,9 +161,38 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.menubar} >
-        <Menubar
-          onClick={(name, path) => handleClickMenu(name, path)}
-        />
+
+        <div
+          style={{
+            position: 'relative',
+            height: '100vh',
+            width: '200px'
+          }}
+        >
+          <Menubar
+            onClick={(name, path) => handleClickMenu(name, path)}
+          />
+
+          {openSetting &&
+            <div className={styles.settingBtn} >
+              <div
+                onClick={() => handleClickOpenSetting("Quản lý vai trò", '/vaitro')}
+              >
+                <p>Quản lý vài trò</p>
+              </div>
+              <div
+                onClick={() => handleClickOpenSetting("Quản lý tài khoản", '/taikhoan')}
+              >
+                <p>Quản lý tài khoản</p>
+              </div>
+              <div
+                onClick={() => handleClickOpenSetting("Nhật ký hoạt động", '/nhatky')}
+              >
+                <p>Nhật ký người dùng</p>
+              </div>
+            </div>
+          }
+        </div>
       </div>
 
       <div className={styles.content} >

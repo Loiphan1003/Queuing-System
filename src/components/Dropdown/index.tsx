@@ -6,7 +6,7 @@ type DropdownType = {
     data: string[],
     onClick: (value: string) => void,
     setWidth: string,
-    value: string,
+    value: string | undefined,
 }
 
 export const Dropdown = (props: DropdownType) => {
@@ -16,10 +16,10 @@ export const Dropdown = (props: DropdownType) => {
 
     const handleText = useCallback(
       () => {
-        if(props.value !== "") return setText(props.value);
+        if(props.value !== "" && props.value !== undefined) return setText(props.value);
         setText(props.data[0])
       },
-      [],
+      [props.data, props.value],
     )
     
 

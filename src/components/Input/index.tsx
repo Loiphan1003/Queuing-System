@@ -4,7 +4,7 @@ import styles from './Input.module.css';
 type InputProps = {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   status: boolean,
-  value: string,
+  value: string | undefined,
   placeholder: string,
 }
 

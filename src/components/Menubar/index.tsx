@@ -12,7 +12,10 @@ import styles from './Menubar.module.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { stateModel } from '../../types';
+import { account, stateModel } from '../../types';
+import React from 'react';
+import { getCookie } from '../../utils';
+import { getDocumentWithId, updateData } from '../../config/firebase/firestore';
 
 type MenuBarProps = {
     onClick: (name: string, path: string) => void
@@ -74,6 +77,14 @@ export const Menubar = (props: MenuBarProps) => {
 
     const getLocation = useCallback(() => {
         const getUrlLocationPathName = location.pathname;
+
+        if(getUrlLocationPathName.includes('/taikhoan') ||
+            getUrlLocationPathName.includes('/vaitro') ||
+            getUrlLocationPathName.includes('/nhatky')
+        ){
+            return setSelected("Cài đặt")
+        }
+
         menubar.forEach(item => {
             if (item.path === getUrlLocationPathName) return setSelected(item.text)
         })
@@ -87,7 +98,13 @@ export const Menubar = (props: MenuBarProps) => {
         getLocation()
     }, [getLocation])
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        const res = getCookie('isLogin')
+        if(res === null || res === undefined) return;
+        const account = await getDocumentWithId(res, 'accounts') as account;
+        account.status = "Ngưng hoạt động"
+        const updateStatus = await updateData(account, 'accounts')
+        if(updateStatus !== true) return;
         document.cookie = "isLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate('/')
     }
@@ -113,14 +130,18 @@ export const Menubar = (props: MenuBarProps) => {
                         </div>
                     ))}
 
-                    <div 
-                        className={styles.btn}
-                        // onClick={() => han}
+                    <div
+                        className={selected.includes("Cài đặt") ? styles.btnActive : styles.btn}
+                        onClick={() =>{ 
+                            props.onClick('Cài đặt', '')
+                            setSelected("Cài đặt");
+                        }}
                     >
                         <img src={SettingIcon} alt="setting icon" />
                         <p>Cài đặt hệ thống</p>
                         <img src={MoreIcon} alt="more icon" />
                     </div>
+                    
                 </div>
             </div>
 
@@ -131,6 +152,8 @@ export const Menubar = (props: MenuBarProps) => {
                 <img src={LogoutIcon} alt="logout icon" />
                 <p>Đăng xuất</p>
             </div>
+
+
         </div>
     )
 }

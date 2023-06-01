@@ -36,6 +36,19 @@
     cursor: pointer;
 }
 
+/* .btn{
+    height: 48px;
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin: 0 12px;
+    padding: 14px 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+} */
+
 .listBtn>.btn>p{
     font-family: 'Nunito';
     font-style: normal;
@@ -68,6 +81,14 @@
 }
 .btnActive>p{
     color: white;
+}
+.settingBtn{
+    position: absolute;
+    width: 200px;
+    height: 144px;
+    background-color: white;
+    left: 200px;
+    z-index: 10;
 }
 
 .logoutBtn {

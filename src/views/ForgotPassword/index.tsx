@@ -45,12 +45,20 @@ export const ForgotPassword = () => {
                     <h1>Đặt lại mật khẩu mới</h1>
                     <div>
                         <label>Mật khẩu</label>
-                        <PasswordInput status={true} handleChange={(e) => console.log(e.target.value)} />
+                        <PasswordInput 
+                            status={true} 
+                            value=''
+                            handleChange={(e) => console.log(e.target.value)}
+                        />
                     </div>
 
                     <div>
                         <label>Nhập lại mật khẩu</label>
-                        <PasswordInput status={true} handleChange={(e) => console.log(e.target.value)} />
+                        <PasswordInput 
+                            status={true} 
+                            value=''
+                            handleChange={(e) => console.log(e.target.value)}
+                        />
                     </div>
 
                     <Button text='Xác nhận' handleClick={() => navigate('/')} />

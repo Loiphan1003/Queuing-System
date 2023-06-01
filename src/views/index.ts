@@ -7,3 +7,6 @@ export * from './Devices';
 export * from './Service';
 export * from './CapSo';
 export * from './Report';
+export * from './Account';
+export * from './Role';
+export * from './History';

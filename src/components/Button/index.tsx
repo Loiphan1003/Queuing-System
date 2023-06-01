@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './button.module.css';
 
 type ButtonProps = {
-    text: string,
+    text: string | undefined,
     handleClick: () => void
 }
 

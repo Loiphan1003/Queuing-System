@@ -83,7 +83,7 @@ export const Info = () => {
     const handleAddOrUpdate = async () => {
         const getType = breadcrumbSate[breadcrumbSate.length - 1] as {title: string, path: string};
         if(getType.title.includes("Thêm thiết bị")){
-            const res = await addData(device);
+            const res = await addData(device, 'devices');
         }
         else{
             const res = await updateData(device, 'devices');

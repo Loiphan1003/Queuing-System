@@ -6,7 +6,7 @@ export const getAllDevices = createAsyncThunk(
     "Devices: GET ALL",
     async () => {
         try {
-            const res = await getAllDataInColection();
+            const res = await getAllDataInColection('devices');
             return res;
         } catch (error) {
             return [];

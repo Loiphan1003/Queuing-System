@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { PasswordInput, Input } from '../../components';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '../../config/firebase';
+import { account } from '../../types';
+import { updateData } from '../../config/firebase/firestore';
+import { useDispatch } from 'react-redux';
+import { changeAccountLogin } from '../../store/reducers/accountSlice';
 
 type Account = {
     userName: string | undefined,
@@ -26,6 +30,7 @@ const setCookie = (name: string, value: any, day: number) => {
 
 export const Login = () => {
 
+    const dispatch = useDispatch<any>();
     const navigate = useNavigate();
     const [account, setAccount] = useState<Account | null>(null);
     const [isCorrect, setIsCorrect] = useState(true)
@@ -35,19 +40,22 @@ export const Login = () => {
             return setIsCorrect(false);
         }
 
-        let isLogin: string = '';
+        let isLogin = {} as account;
         const q = query(collection(db, "accounts"), where("username", "==", account.userName), where("password", "==", account.password));
-
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            isLogin = doc.id;
+            isLogin = { ...doc.data(), id: doc.id } as account;
         });
 
-        if (isLogin !== '') {
-            setCookie("isLogin", isLogin, 1);
-            return navigate('/trangchu')
+        if (isLogin.id !== '') {
+            isLogin.status = "Hoạt động"
+            const updateStatus = await updateData(isLogin, 'accounts')
+            if (updateStatus !== true) return;
+            dispatch(changeAccountLogin(isLogin))
+            setCookie("isLogin", isLogin.id, 1);
+            return navigate('/trangchu');
         }
-        return
+        return;
     }
 
     return (
@@ -78,6 +86,7 @@ export const Login = () => {
 
                         <PasswordInput
                             status={isCorrect}
+                            value=''
                             handleChange={(e) =>
                                 setAccount({
                                     userName: account?.userName,

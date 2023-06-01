@@ -8,6 +8,7 @@ import { addValue } from "../../store/reducers/breadcrumbSlice";
 import { Info } from "./Info";
 import { device } from "../../types";
 import { Detail } from "./Detail";
+import { checkTableHeader } from "../../utils";
 
 
 const tableHeader = [
@@ -61,14 +62,6 @@ export const Devices = () => {
     getElementAtEndOfBreadscrum()
   }, [getElementAtEndOfBreadscrum])
 
-
-  const checkTableHeader = useCallback(
-    (header: string) => {
-      if (header.includes('nút')) return false;
-      return true;
-    }, []
-  )
-
   const checkStatus = (text: string) => {
     if (text === "Hoạt động" || text === "Kết nối") return `${styles.green}`;
     return `${styles.red}`
@@ -111,10 +104,6 @@ export const Devices = () => {
       res = devicesState.filter(i => { return i.connectStatus.includes(filter.connect) && i.activeStatus.includes(filter.active) })
       dispatch(changeFilter(true))
     }
-    // if (filter.searchText !== '') {
-    //   res = devicesState.filter(i => i.connectStatus.includes(filter.searchText))
-    //   dispatch(changeFilter(true))
-    // }
     if (filter.active === 'Tất cả' && filter.connect === 'Tất cả') {
       dispatch(addDeviceFilter([]))
       return dispatch(changeFilter(false));

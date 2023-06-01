@@ -1,30 +1,59 @@
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
-import { device } from "../../types";
+import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { account, device, service } from "../../types";
 import { db } from "./index";
 
-export const addData = async (data: device) => {
-    const { id, ...value } = data;
-    const docRef = await addDoc(collection(db, "devices"), value);
-    // console.log("Document written with ID: ", docRef.id);
-    return docRef.id
+export const addData = async (
+    data: device | account,
+    nameColection: string
+) => {
+    try {
+        const { id, ...value } = data;
+        const docRef = await addDoc(collection(db, nameColection), value);
+        return { status: true, data: { ...value, id: docRef.id } };
+    } catch (error) {
+        return { status: false, data: undefined };
+    }
 };
 
-export const getAllDataInColection = async () => {
-    let res: device[] = [];
-    const querySnapshot = await getDocs(collection(db, "devices"));
+export const getAllDataInColection = async (nameColection: string) => {
+    let res: any[] = [];
+    const querySnapshot = await getDocs(collection(db, nameColection));
     querySnapshot.forEach((doc) => {
-        // console.log(doc.id, " => ", doc.data());
-        res.push({ ...doc.data(), id: doc.id } as device);
+        return res.push({ ...doc.data(), id: doc.id });
     });
     return res;
 };
 
-export const updateData = async (data: device, nameColection: string) => {
+export const updateData = async (
+    data: device | account,
+    nameColection: string
+) => {
     try {
-        const { id, ...value} = data;
-        await setDoc(doc(db, nameColection, id), value)
+        const { id, ...value } = data;
+        await setDoc(doc(db, nameColection, id), value);
         return true;
     } catch (error) {
-        return []
+        return [];
     }
-}
+};
+
+export const addDatas = async (
+    data: device[] | service[],
+    nameColection: string
+) => {
+    data.forEach(async (item) => {
+        const { id, ...value } = item;
+        const docRef = await addDoc(collection(db, nameColection), value);
+        console.log("Document written with ID: ", docRef.id);
+    });
+};
+
+export const getDocumentWithId = async (id: string, nameColection: string) => {
+    let res: any = {}
+    const q = query(collection(db, nameColection), where("__name__", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        res = { ...doc.data(), id: doc.id }
+    });
+    return res;
+};

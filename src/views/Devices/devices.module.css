@@ -51,10 +51,9 @@ table {
 
 thead {
     color: white;
-    background-color: #FF9138;
 }
 
-thead th {
+table thead th {
     padding: 15px 8px;
     text-align: left;
 }
