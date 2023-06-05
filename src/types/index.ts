@@ -32,7 +32,16 @@ export interface account {
     email: string,
     role: string,
     password: string,
-    status: string
+    status: string,
+    avatar: string,
+}
+
+export interface role {
+    id: string,
+    roleName: string,
+    numberPeopleUse: number,
+    description: string,
+    features: {name: string, group: string }[]
 }
 
 export interface DateType {

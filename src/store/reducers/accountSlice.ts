@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { account } from "../../types";
-import { getAllDataInColection } from "../../config/firebase/firestore";
+import {
+    getAllDataInColection,
+    updateData,
+} from "../../config/firebase/firestore";
 
 export const getAllAccount = createAsyncThunk("Account: GET ALL", async () => {
     try {
@@ -11,6 +14,39 @@ export const getAllAccount = createAsyncThunk("Account: GET ALL", async () => {
     }
 });
 
+export const updateAccount = createAsyncThunk(
+    "Account: UPDATE ACCOUNT",
+    async (data: account) => {
+        try {
+            const res = await updateData(data, "accounts");
+            if (res === null)
+                return {
+                    id: "",
+                    email: "",
+                    fullname: "",
+                    password: "",
+                    phone: "",
+                    role: "",
+                    status: "",
+                    username: "",
+                    avatar: "",
+                } as account;
+            return res;
+        } catch (error) {
+            return {
+                id: "",
+                email: "",
+                fullname: "",
+                password: "",
+                phone: "",
+                role: "",
+                status: "",
+                username: "",
+                avatar: "",
+            } as account;
+        }
+    }
+);
 
 type accountSliceType = {
     accounts: account[];
@@ -31,6 +67,7 @@ const initialState: accountSliceType = {
         role: "",
         status: "",
         username: "",
+        avatar: "",
     },
     accountLogin: {
         id: "",
@@ -41,9 +78,10 @@ const initialState: accountSliceType = {
         role: "",
         status: "",
         username: "",
+        avatar: "",
     },
     accountsFilter: [],
-    isFilter: false
+    isFilter: false,
 };
 
 const accountSlice = createSlice({
@@ -63,16 +101,17 @@ const accountSlice = createSlice({
                 role: "",
                 status: "",
                 username: "",
+                avatar: "",
             };
         },
         changeAccountLogin: (state, action) => {
-            state.accountLogin = action.payload
+            state.accountLogin = action.payload;
         },
         updateAccounts: (state, action) => {
             state.accounts = action.payload;
         },
         filterAccounts: (state, action) => {
-            state.accountsFilter = action.payload
+            state.accountsFilter = action.payload;
         },
         updateFilterState: (state, action) => {
             state.isFilter = action.payload;
@@ -82,9 +121,19 @@ const accountSlice = createSlice({
         builder.addCase(getAllAccount.fulfilled, (state, action) => {
             state.accounts = action.payload;
         });
+        builder.addCase(updateAccount.fulfilled, (state, action) => {
+            state.accountLogin = action.payload;
+        });
     },
 });
 
-export const { addAccount, clearAccount, changeAccountLogin ,updateAccounts, filterAccounts, updateFilterState } = accountSlice.actions;
+export const {
+    addAccount,
+    clearAccount,
+    changeAccountLogin,
+    updateAccounts,
+    filterAccounts,
+    updateFilterState,
+} = accountSlice.actions;
 
 export default accountSlice.reducer;

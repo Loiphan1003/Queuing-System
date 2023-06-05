@@ -50,7 +50,7 @@ export const Login = () => {
         if (isLogin.id !== '') {
             isLogin.status = "Hoạt động"
             const updateStatus = await updateData(isLogin, 'accounts')
-            if (updateStatus !== true) return;
+            if (updateStatus === null) return;
             dispatch(changeAccountLogin(isLogin))
             setCookie("isLogin", isLogin.id, 1);
             return navigate('/trangchu');

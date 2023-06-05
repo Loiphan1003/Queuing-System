@@ -87,7 +87,7 @@ export const Info = () => {
         }
         else{
             const res = await updateData(device, 'devices');
-            if(res !== true) return;
+            if(res === null) return;
             dispatch(changeValue(breadcrumbSate.filter(i => {return i.title.includes(getType.title) === false})))
         }
         // console.log(device);

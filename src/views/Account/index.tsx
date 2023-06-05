@@ -19,6 +19,7 @@ export const Account = () => {
   const filterState = useSelector((state: RootState) => state.account.isFilter);
   const accountsFilter = useSelector((state: RootState) => state.account.accountsFilter);
   const accountState = useSelector((state: RootState) => state.account.account);
+  const rolesState = useSelector((state: RootState) => state.role.roles);
 
   const [displayPage, setDisplayPage] = useState<string>("")
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,6 +49,14 @@ export const Account = () => {
   useEffect(() => {
     getElementAtEndOfBreadscrum()
   }, [getElementAtEndOfBreadscrum])
+
+  const getNameRoles = useCallback(() => {
+    let rolesName: string[] = [];
+    rolesState.map((item) => {
+      return rolesName.push(item.roleName);
+    })
+    return rolesName.sort();
+  }, [rolesState])
 
   const handlePageClick = (data: any) => {
     setCurrentPage(data.selected);
@@ -101,7 +110,7 @@ export const Account = () => {
               <p>Tên vai trò</p>
               <Dropdown
                 setWidth='200'
-                data={["Kế toán", "Quản lý", "Admin"]}
+                data={getNameRoles()}
                 value=''
                 onClick={(value) => setFilterRole(value)}
               />

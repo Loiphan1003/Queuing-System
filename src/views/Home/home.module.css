@@ -33,12 +33,17 @@
     height: 248px;
     border-radius: 318px;
 }
-
-.leftSide>div>.changeBtn {
+.leftSide>div>label {
     position: absolute;
     left: 169px;
-    top: 205px;
+    bottom: -10px;
     cursor: pointer;
+}
+.leftSide>div>label>input{
+    display: none;
+}
+.leftSide>div>.changeBtn {
+    position: absolute;
 }
 
 .leftSide>p {

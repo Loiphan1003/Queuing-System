@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, ButtonOutline, Dropdown, Input, PasswordInput } from '../../../components';
 import styles from './info.module.css';
 import { removeLastItemBreadScrumb } from '../../../utils';
@@ -17,6 +17,7 @@ export const Info = (props: InfoProps) => {
 
     const breadcrumbState = useSelector((state: RootState) => state.breadcrumb.value);
     const accountsState = useSelector((state: RootState) => state.account.accounts);
+    const rolesState = useSelector((state: RootState) => state.role.roles);
     const dispatch = useDispatch<any>();
     const [passwordAgain, setPasswordAgain] = useState<string>("");
     const [accountForm, setAccountForm] = useState<account>({
@@ -28,6 +29,7 @@ export const Info = (props: InfoProps) => {
         role: "",
         status: "",
         username: "",
+        avatar: "",
     })
 
     useEffect(() => {
@@ -36,6 +38,15 @@ export const Info = (props: InfoProps) => {
             return setAccountForm(props.data);
         }
     }, [props.data])
+
+
+    const getNameRoles = useCallback(() => {
+        let rolesName: string[] = [];
+        rolesState.map((item) => {
+            return rolesName.push(item.roleName);
+        })
+        return rolesName.sort();
+    }, [rolesState])
 
     const handleInputAgainPassword = (value: string) => {
         return setPasswordAgain(value);
@@ -87,7 +98,7 @@ export const Info = (props: InfoProps) => {
             const value = removeLastItemBreadScrumb(breadcrumbState);
             if (value.lastItem.title.includes("Cập nhật tài khoản")) {
                 const res = await updateData(accountForm, "accounts")
-                if (res !== true) return;
+                if (res === null) return;
                 const newUpdateAccounts: account[] = [];
 
                 accountsState.forEach((item) => {
@@ -102,7 +113,7 @@ export const Info = (props: InfoProps) => {
             }
             if (value.lastItem.title.includes("Thêm tài khoản")) {
                 const res = await addData(accountForm, 'accounts');
-                if(res.status === false) return;
+                if (res.status === false) return;
                 const newAccountsState = [...accountsState, res.data];
                 dispatch(updateAccounts(newAccountsState));
                 dispatch(changeValue(value.newArray));
@@ -177,7 +188,7 @@ export const Info = (props: InfoProps) => {
                     <div className={styles.input} >
                         <p>Vai trò <span>*</span></p>
                         <Dropdown
-                            data={["Kế toán", "Quản lý", "Admin"]}
+                            data={getNameRoles()}
                             setWidth='300'
                             value={accountForm.role !== null ? accountForm.role : ''}
                             onClick={(value) => handleChangeAccountForm("role", value)}

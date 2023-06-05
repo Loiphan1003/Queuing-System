@@ -1,9 +1,9 @@
 import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { account, device, service } from "../../types";
+import { account, device, role, service } from "../../types";
 import { db } from "./index";
 
 export const addData = async (
-    data: device | account,
+    data: device | account | role,
     nameColection: string
 ) => {
     try {
@@ -25,20 +25,20 @@ export const getAllDataInColection = async (nameColection: string) => {
 };
 
 export const updateData = async (
-    data: device | account,
+    data: device | account | role,
     nameColection: string
 ) => {
     try {
         const { id, ...value } = data;
         await setDoc(doc(db, nameColection, id), value);
-        return true;
+        return data as device & account;
     } catch (error) {
-        return [];
+        return null;
     }
 };
 
 export const addDatas = async (
-    data: device[] | service[],
+    data: device[] | service[] | role[],
     nameColection: string
 ) => {
     data.forEach(async (item) => {

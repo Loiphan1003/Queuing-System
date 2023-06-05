@@ -104,7 +104,7 @@ export const Menubar = (props: MenuBarProps) => {
         const account = await getDocumentWithId(res, 'accounts') as account;
         account.status = "Ngưng hoạt động"
         const updateStatus = await updateData(account, 'accounts')
-        if(updateStatus !== true) return;
+        if(updateStatus === null) return;
         document.cookie = "isLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate('/')
     }

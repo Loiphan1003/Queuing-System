@@ -12,3 +12,4 @@ export * from './Table';
 export * from './Pagination';
 export * from './SelectBox';
 export * from './DateButton';
+export * from './CheckBox';

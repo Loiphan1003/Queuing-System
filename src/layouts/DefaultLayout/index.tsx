@@ -10,6 +10,7 @@ import { account, stateModel } from '../../types';
 import { getCookie } from '../../utils';
 import { getDocumentWithId } from '../../config/firebase/firestore';
 import { changeAccountLogin } from '../../store/reducers/accountSlice';
+import { getAllRole } from '../../store/reducers/roleSlice';
 // import { collection, query, where, getDocs } from "firebase/firestore";
 // import { db } from '../../config/firebase';
 
@@ -67,6 +68,16 @@ const breadcrumbData = [
     }]
   },
   {
+    path: '/vaitro',
+    data: [{
+      title: "Cài đặt hệ thống",
+      path: ''
+    }, {
+      title: "Quản lý vai trò",
+      path: '/vaitro'
+    }]
+  },
+  {
     path: '/taikhoan',
     data: [{
       title: "Cài đặt hệ thống",
@@ -80,21 +91,21 @@ const breadcrumbData = [
 
 export const DefaultLayout = (props: DefaultLayoutProps) => {
 
-  const state = useSelector((state: RootState) => state.breadcrumb.value)
+  const state = useSelector((state: RootState) => state.breadcrumb.value);
+  const accountInfo = useSelector((state: RootState) => state.account.accountLogin);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
 
   const location = useLocation();
 
   const [notificationClick, setNotificationClick] = useState<boolean>(false)
   const [openSetting, setOpenSetting] = useState<boolean>(false)
 
-  // useEffect(() => {
-  //   const result = getCookie('isLogin')
-  //   if (result === null) return navigate('/');
-  //   return;
-  // }, [navigate])
+
+  useEffect(() => {
+    dispatch(getAllRole())
+  }, [dispatch])
 
   const handleClickMenu = useCallback((name: string, path: string) => {
     let temp = [] as { title: string, path: string }[];
@@ -148,7 +159,6 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
     if (res === null || res === undefined) return navigate('/');
     const accountInfo = await getDocumentWithId(res, 'accounts') as account;
     if (accountInfo?.id === undefined) return navigate('/');
-    console.log(accountInfo);
     dispatch(changeAccountLogin(accountInfo))
   }, [dispatch, navigate])
 
@@ -233,10 +243,10 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
                 navigate('/trangchu')
               }}
             >
-              <img src={AvatarTest} alt="avatar" />
+              <img src={accountInfo.avatar === '' ? AvatarTest : accountInfo.avatar} alt="avatar" />
               <div>
                 <p className={styles.hello}>Xin chào</p>
-                <p className={styles.username}>Lê Quỳnh Ái Vân</p>
+                <p className={styles.username}>{accountInfo.fullname}</p>
               </div>
             </div>
           </div>

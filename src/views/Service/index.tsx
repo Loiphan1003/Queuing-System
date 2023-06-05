@@ -142,6 +142,17 @@ export const Service = () => {
           </div>
         </React.Fragment>
       }
+
+      {displayPage === "Thêm dịch vụ" &&
+        <React.Fragment>
+          <div>
+            <div className="container">
+            <h3>Thông tin dịch vụ</h3>
+            </div>
+          </div>
+        </React.Fragment>
+          
+      }
     </div>
   )
 }
