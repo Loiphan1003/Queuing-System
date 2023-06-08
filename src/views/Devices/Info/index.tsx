@@ -9,13 +9,15 @@ import { addData, updateData } from '../../../config/firebase/firestore';
 import { resetDevice } from '../../../store/reducers/devicesSlice';
 
 
-const services =["Tất cả", "Khám sản phụ khoa", "Khám răng hàm mặt", "Khám tai mũi họng", "Khám hô hấp", "Khám tổng quát"]
+// const services =["Tất cả", "Khám sản phụ khoa", "Khám răng hàm mặt", "Khám tai mũi họng", "Khám hô hấp", "Khám tổng quát"]
 
 export const Info = () => {
 
     const dispatch = useDispatch();
     const breadcrumbSate = useSelector((state: RootState) => state.breadcrumb.value);
+    const servicesState = useSelector((state: RootState) => state.service.services);
     const deviceState = useSelector((state: RootState) => state.device.device);
+
 
     const [device, setDevice] = useState<device>({
         id: '',
@@ -29,6 +31,10 @@ export const Info = () => {
         username: '',
         deviceType: '',
     })
+    const [services, setServices] = useState<string[]>([
+        "Tất cả"
+        // , "Khám sản phụ khoa", "Khám răng hàm mặt", "Khám tai mũi họng", "Khám hô hấp", "Khám tổng quát"
+    ])
 
     const getTextButton = () => {
         let text: string = "";
@@ -39,6 +45,17 @@ export const Info = () => {
             text = "Cập nhật";
         }
         return text;
+    }
+
+    const displayServiceForSelectBox = () => {
+        let services: string[] = ["Tất cả"];
+        servicesState.map((item) => {
+            if(item.activeStatus.match("Hoạt động")){
+                return services.push(item.serviceName);
+            }
+            return services;
+        })
+        return services;
     }
 
     const handleChange = (name: string, value: string) => {
@@ -170,7 +187,7 @@ export const Info = () => {
                 <div className={styles.inputSelectBox}>
                     <p>Dịch vụ sử dụng: <span>*</span></p>
                     <SelectBox
-                        data={services}
+                        data={displayServiceForSelectBox()}
                         value={handleFormatStringToArray(device.deviceUse)}
                         onClickSelect={(item) => handleChangeServiceUse(item)}
                         onClickDelete={(item) => handleChangeDeleteServiceUse(item)}

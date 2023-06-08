@@ -22,6 +22,7 @@ export interface service{
     serviceName: string,
     description: string,
     activeStatus: string,
+    rule: {name: string, value: string | number}[],
 }
 
 export interface account {
@@ -42,6 +43,27 @@ export interface role {
     numberPeopleUse: number,
     description: string,
     features: {name: string, group: string }[]
+}
+
+export interface NumberLevel {
+    id: string,
+    stt: number,
+    customer: string,
+    device: string,
+    service: string,
+    status: string,
+    timeuse: string,
+    timeexpire: string,
+    email: string,
+    phone: string
+}
+
+export interface history {
+    id: string,
+    username: string,
+    time: string,
+    ip: string,
+    content: string,
 }
 
 export interface DateType {

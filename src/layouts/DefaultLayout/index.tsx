@@ -11,6 +11,7 @@ import { getCookie } from '../../utils';
 import { getDocumentWithId } from '../../config/firebase/firestore';
 import { changeAccountLogin } from '../../store/reducers/accountSlice';
 import { getAllRole } from '../../store/reducers/roleSlice';
+import { getAllServices } from '../../store/reducers/serviceSlice';
 // import { collection, query, where, getDocs } from "firebase/firestore";
 // import { db } from '../../config/firebase';
 
@@ -105,6 +106,7 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
 
   useEffect(() => {
     dispatch(getAllRole())
+    dispatch(getAllServices())
   }, [dispatch])
 
   const handleClickMenu = useCallback((name: string, path: string) => {

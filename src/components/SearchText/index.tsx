@@ -3,6 +3,7 @@ import styles from './searchText.module.css'
 
 type SearchText = {
     onFind: (text: string) => void;
+    setWidth: number,
 }
 
 export const SearchText = (props: SearchText) => {
@@ -10,7 +11,12 @@ export const SearchText = (props: SearchText) => {
     const [text, setText] = useState<string>("")
 
     return (
-        <div className={styles.searchText}>
+        <div 
+            className={styles.searchText}
+            style={{
+                width: `${props.setWidth}px`
+            }}
+        >
             <input 
                 type="text" 
                 placeholder='Nhập từ khóa' 

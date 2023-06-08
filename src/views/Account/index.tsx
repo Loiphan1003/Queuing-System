@@ -111,7 +111,7 @@ export const Account = () => {
               <Dropdown
                 setWidth='200'
                 data={getNameRoles()}
-                value=''
+                value={filterRole}
                 onClick={(value) => setFilterRole(value)}
               />
             </div>
@@ -119,6 +119,7 @@ export const Account = () => {
             <div>
               <p>Từ khóa</p>
               <SearchText
+                setWidth={300}
                 onFind={(text) => handleSearchText(text)}
               />
             </div>

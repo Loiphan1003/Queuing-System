@@ -13,3 +13,5 @@ export * from './Pagination';
 export * from './SelectBox';
 export * from './DateButton';
 export * from './CheckBox';
+export * from './ButtonBackAndUpdate';
+export * from './ButtonBack';

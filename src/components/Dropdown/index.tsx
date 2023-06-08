@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './dropdowm.module.css';
 
 
@@ -6,29 +6,22 @@ type DropdownType = {
     data: string[],
     onClick: (value: string) => void,
     setWidth: string,
-    value: string | undefined,
+    value: string | undefined | null,
 }
 
 export const Dropdown = (props: DropdownType) => {
 
     const [isSelect, setIsSelect] = useState<boolean>(false);
-    const [text, setText] = useState<string>("")
-
-    const handleText = useCallback(
-      () => {
-        if(props.value !== "" && props.value !== undefined) return setText(props.value);
-        setText(props.data[0])
-      },
-      [props.data, props.value],
-    )
-    
+    const [text, setText] = useState<string>(props.data[0])
 
     useEffect(() => {
-        handleText()
-    }, [handleText])
+        if (props.value !== "" && props.value !== undefined && props.value !== null) return setText(props.value);
+        // return setText(props.data[0])
+    }, [props.value])
+
 
     return (
-        <div className={styles.dropdown} 
+        <div className={styles.dropdown}
             style={{
                 width: `${props.setWidth}px`
             }}
@@ -50,9 +43,9 @@ export const Dropdown = (props: DropdownType) => {
             <div className={isSelect ? styles.active : styles.none} >
                 <ul>
                     {props.data.map(i => (
-                        <li 
+                        <li
                             key={i}
-                            onClick={() =>{ 
+                            onClick={() => {
                                 setIsSelect(false);
                                 setText(i);
                                 props.onClick(i);

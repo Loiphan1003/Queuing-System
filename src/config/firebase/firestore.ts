@@ -3,7 +3,7 @@ import { account, device, role, service } from "../../types";
 import { db } from "./index";
 
 export const addData = async (
-    data: device | account | role,
+    data: device | account | role | service,
     nameColection: string
 ) => {
     try {
@@ -25,13 +25,13 @@ export const getAllDataInColection = async (nameColection: string) => {
 };
 
 export const updateData = async (
-    data: device | account | role,
+    data: device | account | role | service,
     nameColection: string
 ) => {
     try {
         const { id, ...value } = data;
         await setDoc(doc(db, nameColection, id), value);
-        return data as device & account;
+        return data as device & account & service;
     } catch (error) {
         return null;
     }

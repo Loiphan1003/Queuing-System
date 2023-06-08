@@ -165,7 +165,10 @@ export const Devices = () => {
 
               <div>
                 <p>Từ khóa</p>
-                <SearchText onFind={(text) => handleSreachText(text)} />
+                <SearchText 
+                  setWidth={300}
+                  onFind={(text) => handleSreachText(text)} 
+                />
               </div>
             </div>
 
