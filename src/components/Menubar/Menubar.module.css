@@ -1,5 +1,5 @@
 .container {
-    /* width: 100%; */
+    width: inherit;
     height: inherit;
     display: flex;
     flex-direction: column;

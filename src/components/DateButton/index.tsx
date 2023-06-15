@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar } from '../Calendar';
 import styles from './dateButton.module.css';
 
-export const DateButton = () => {
+type DateButtonProps = {
+    onClick: (value: { dateStart: string, dateEnd: string }) => void,
+}
+
+export const DateButton = (props: DateButtonProps) => {
+
+    const [openCalendar, setOpenCalendar] = useState<boolean>(false);
+    const [displayDate, setDisplayDate] = useState({
+        dateStart: '',
+        dateEnd: '',
+    })
+
+    const handleOpenCalendar = () => {
+        setOpenCalendar(!openCalendar);
+    }
+
+    const handleDisplayDate = (value: string) => {
+        const dateTime = new Date(value);
+        let date = dateTime.getDate().toString();
+        let month = dateTime.getMonth().toString();
+        if (value === '') return 'DD/MM/YYYY';
+        if (parseInt(date) < 10) { date = `0${date}` }
+        if (parseInt(month) < 10) { month = `0${month}` }
+        return `${date}/${month}/${dateTime.getFullYear()}`
+    }
+
+    useEffect(() => {
+        if(displayDate.dateStart !== '' && displayDate.dateStart !== '') return props.onClick(displayDate)
+        return;
+    }, [displayDate, props])
+
+
     return (
         <div className={styles.dateButonContainer} >
-            <div className={styles.dateStart} >
+            <div
+                className={styles.dateStart}
+                onClick={() => handleOpenCalendar()}
+            >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.66666 4.79199C6.32499 4.79199 6.04166 4.50866 6.04166 4.16699V1.66699C6.04166 1.32533 6.32499 1.04199 6.66666 1.04199C7.00832 1.04199 7.29166 1.32533 7.29166 1.66699V4.16699C7.29166 4.50866 7.00832 4.79199 6.66666 4.79199Z" fill="#FF7506" />
                     <path d="M13.3333 4.79199C12.9917 4.79199 12.7083 4.50866 12.7083 4.16699V1.66699C12.7083 1.32533 12.9917 1.04199 13.3333 1.04199C13.675 1.04199 13.9583 1.32533 13.9583 1.66699V4.16699C13.9583 4.50866 13.675 4.79199 13.3333 4.79199Z" fill="#FF7506" />
@@ -19,7 +53,7 @@ export const DateButton = () => {
                     <path d="M13.3333 18.9587H6.66667C3.625 18.9587 1.875 17.2087 1.875 14.167V7.08366C1.875 4.04199 3.625 2.29199 6.66667 2.29199H13.3333C16.375 2.29199 18.125 4.04199 18.125 7.08366V14.167C18.125 17.2087 16.375 18.9587 13.3333 18.9587ZM6.66667 3.54199C4.28333 3.54199 3.125 4.70033 3.125 7.08366V14.167C3.125 16.5503 4.28333 17.7087 6.66667 17.7087H13.3333C15.7167 17.7087 16.875 16.5503 16.875 14.167V7.08366C16.875 4.70033 15.7167 3.54199 13.3333 3.54199H6.66667Z" fill="#FF7506" />
                 </svg>
 
-                <p>10/10/2021</p>
+                <p>{handleDisplayDate(displayDate.dateStart)}</p>
             </div>
 
             <div>
@@ -42,10 +76,16 @@ export const DateButton = () => {
                     <path d="M13.3333 18.9587H6.66667C3.625 18.9587 1.875 17.2087 1.875 14.167V7.08366C1.875 4.04199 3.625 2.29199 6.66667 2.29199H13.3333C16.375 2.29199 18.125 4.04199 18.125 7.08366V14.167C18.125 17.2087 16.375 18.9587 13.3333 18.9587ZM6.66667 3.54199C4.28333 3.54199 3.125 4.70033 3.125 7.08366V14.167C3.125 16.5503 4.28333 17.7087 6.66667 17.7087H13.3333C15.7167 17.7087 16.875 16.5503 16.875 14.167V7.08366C16.875 4.70033 15.7167 3.54199 13.3333 3.54199H6.66667Z" fill="#FF7506" />
                 </svg>
 
-                <p>10/10/2021</p>
+                <p>{handleDisplayDate(displayDate.dateEnd)}</p>
             </div>
 
-            {/* <Calendar /> */}
+            {openCalendar &&
+                <Calendar
+                    open={(value) => setOpenCalendar(value)}
+                    onClick={(date) => setDisplayDate(date)}
+                    typeSelect={2}
+                />
+            }
         </div>
     )
 }

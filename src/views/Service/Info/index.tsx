@@ -9,18 +9,18 @@ import { changeValue } from '../../../store/reducers/breadcrumbSlice'
 import { removeLastItemBreadScrumb } from '../../../utils'
 import { clearService, createNewService, updateService } from '../../../store/reducers/serviceSlice'
 import { updateData } from '../../../config/firebase/firestore'
+import { addHistorys } from '../../../store/reducers/historySlice'
 
 export const Info = () => {
 
     const serviceState = useSelector((state: RootState) => state.service.service);
     const servicesState = useSelector((state: RootState) => state.service.services);
     const breadcrumbSate = useSelector((state: RootState) => state.breadcrumb.value);
+    const accountState = useSelector((state: RootState) => state.account.accountLogin);
 
     const dispatch = useDispatch<any>();
 
-    useEffect(() => {
-        setService(serviceState)
-    }, [serviceState])
+    
 
     const [service, setService] = useState<service>({
         id: '',
@@ -28,8 +28,13 @@ export const Info = () => {
         description: '',
         serviceCode: '',
         serviceName: '',
+        dateCreate: '',
         rule: [],
     })
+
+    useEffect(() => {
+        setService(serviceState)
+    }, [serviceState])
 
     const getTextButton = () => {
         let text: string = "";
@@ -72,11 +77,24 @@ export const Info = () => {
 
     const handleAddOrUpdate = async () => {
         const getType = breadcrumbSate[breadcrumbSate.length - 1] as { title: string, path: string };
+
+        const newOrUpdateService: service = {
+            id: service.id,
+            activeStatus: service.activeStatus,
+            dateCreate: service.dateCreate,
+            description: service.description,
+            rule: service.rule,
+            serviceCode: service.serviceCode,
+            serviceName: service.serviceName,
+        };
+        newOrUpdateService.dateCreate = new Date().toUTCString();
+
         if (getType.title.match("Thêm dịch vụ")) {
-            dispatch(createNewService(service));
+            dispatch(createNewService(newOrUpdateService));
+            dispatch(addHistorys({name: accountState.username, content: `dịch vụ ${service.serviceName}`, type: "Thêm"}))
         }
         else {
-            const res = await updateData(service, 'services');
+            const res = await updateData(newOrUpdateService, 'services');
             if(res === null) return;
             const newServices: service[] = [];
             servicesState.forEach((item: service) => {
@@ -86,6 +104,7 @@ export const Info = () => {
                 newServices.push(item)
             })
             dispatch(updateService(newServices))
+            dispatch(addHistorys({name: accountState.username, content: `dịch vụ ${service.serviceName}`, type: "Cập nhật"}))
         }
         handleCancel();
     }

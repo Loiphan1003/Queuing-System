@@ -1,9 +1,17 @@
-import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { account, device, role, service } from "../../types";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    setDoc,
+    where,
+} from "firebase/firestore";
+import { NumberLevel, account, device, history, role, service } from "../../types";
 import { db } from "./index";
 
 export const addData = async (
-    data: device | account | role | service,
+    data: device | account | role | service | NumberLevel | history,
     nameColection: string
 ) => {
     try {
@@ -38,7 +46,7 @@ export const updateData = async (
 };
 
 export const addDatas = async (
-    data: device[] | service[] | role[],
+    data: device[] | service[] | role[] | NumberLevel[],
     nameColection: string
 ) => {
     data.forEach(async (item) => {
@@ -49,11 +57,26 @@ export const addDatas = async (
 };
 
 export const getDocumentWithId = async (id: string, nameColection: string) => {
-    let res: any = {}
+    let res: any = {};
     const q = query(collection(db, nameColection), where("__name__", "==", id));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-        res = { ...doc.data(), id: doc.id }
+        res = { ...doc.data(), id: doc.id };
     });
     return res;
+};
+
+export const getListNumberLevelOfService = async (type: string) => {
+    try {
+        const res: NumberLevel[] = [];
+        const q = query(collection(db, "numberLevels"), where("service", "==", type));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            res.push({...doc.data(), id: doc.id} as NumberLevel);
+        });
+        return res.sort((a,b) =>{ return parseInt(a.stt) - parseInt(b.stt) });
+    } catch (error) {
+        return [];
+    }
 };

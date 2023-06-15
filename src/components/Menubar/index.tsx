@@ -49,6 +49,14 @@ const menubar = [
     },
 ]
 
+const menubarWithOutLogin = [
+    {
+        text: "Cấp số",
+        img: CapSoIcon,
+        path: '/capso'
+    },
+]
+
 
 const checkIsSelect = (array: stateModel[], text: string) => {
     let checked = true
@@ -65,7 +73,8 @@ const checkIsSelect = (array: stateModel[], text: string) => {
 export const Menubar = (props: MenuBarProps) => {
 
     const navigate = useNavigate();
-    const state = useSelector((state: RootState) => state.breadcrumb.value)
+    const state = useSelector((state: RootState) => state.breadcrumb.value);
+    const accountLoginState = useSelector((state: RootState) => state.account.accountLogin);
 
     const location = useLocation()
     const [selected, setSelected] = useState<string>("");
@@ -78,10 +87,10 @@ export const Menubar = (props: MenuBarProps) => {
     const getLocation = useCallback(() => {
         const getUrlLocationPathName = location.pathname;
 
-        if(getUrlLocationPathName.includes('/taikhoan') ||
+        if (getUrlLocationPathName.includes('/taikhoan') ||
             getUrlLocationPathName.includes('/vaitro') ||
             getUrlLocationPathName.includes('/nhatky')
-        ){
+        ) {
             return setSelected("Cài đặt")
         }
 
@@ -100,11 +109,11 @@ export const Menubar = (props: MenuBarProps) => {
 
     const handleLogout = async () => {
         const res = getCookie('isLogin')
-        if(res === null || res === undefined) return;
+        if (res === null || res === undefined) return;
         const account = await getDocumentWithId(res, 'accounts') as account;
         account.status = "Ngưng hoạt động"
         const updateStatus = await updateData(account, 'accounts')
-        if(updateStatus === null) return;
+        if (updateStatus === null) return;
         document.cookie = "isLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate('/')
     }
@@ -116,7 +125,7 @@ export const Menubar = (props: MenuBarProps) => {
                 <img src={AltaLogo} alt="logo" />
 
                 <div className={styles.listBtn}>
-                    {menubar.map(item => (
+                    {accountLoginState.id !== '' && menubar.map(item => (
                         <div
                             key={item.text}
                             className={selected === item.text ? styles.btnActive : styles.btn}
@@ -130,28 +139,45 @@ export const Menubar = (props: MenuBarProps) => {
                         </div>
                     ))}
 
-                    <div
-                        className={selected.includes("Cài đặt") ? styles.btnActive : styles.btn}
-                        onClick={() =>{ 
-                            props.onClick('Cài đặt', '')
-                            setSelected("Cài đặt");
-                        }}
-                    >
-                        <img src={SettingIcon} alt="setting icon" />
-                        <p>Cài đặt hệ thống</p>
-                        <img src={MoreIcon} alt="more icon" />
-                    </div>
-                    
+                    {accountLoginState.id === '' && menubarWithOutLogin.map(item => (
+                        <div
+                            key={item.text}
+                            className={selected === item.text ? styles.btnActive : styles.btn}
+                            onClick={() => {
+                                props.onClick(item.text, item.path)
+                                handleClick(state, item.text)
+                            }}
+                        >
+                            <img src={item.img} alt="icon" />
+                            <p>{item.text}</p>
+                        </div>
+                    ))}
+
+                    {accountLoginState.id !== '' &&
+                        <div
+                            className={selected.includes("Cài đặt") ? styles.btnActive : styles.btn}
+                            onClick={() => {
+                                props.onClick('Cài đặt', '')
+                                setSelected("Cài đặt");
+                            }}
+                        >
+                            <img src={SettingIcon} alt="setting icon" />
+                            <p>Cài đặt hệ thống</p>
+                            <img src={MoreIcon} alt="more icon" />
+                        </div>}
+
                 </div>
             </div>
 
-            <div
-                className={styles.logoutBtn}
-                onClick={() => handleLogout()}
-            >
-                <img src={LogoutIcon} alt="logout icon" />
-                <p>Đăng xuất</p>
-            </div>
+            {accountLoginState.id !== '' &&
+                <div
+                    className={styles.logoutBtn}
+                    onClick={() => handleLogout()}
+                >
+                    <img src={LogoutIcon} alt="logout icon" />
+                    <p>Đăng xuất</p>
+                </div>
+            }
 
 
         </div>

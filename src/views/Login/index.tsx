@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import LoginImage from '../../assets/images/loginImage.svg';
 import LogoAlta from '../../assets/images/Logo_alta.svg';
 import warning from '../../assets/images/warning.svg';
@@ -8,9 +8,10 @@ import { PasswordInput, Input } from '../../components';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '../../config/firebase';
 import { account } from '../../types';
-import { updateData } from '../../config/firebase/firestore';
+import { getDocumentWithId, updateData } from '../../config/firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { changeAccountLogin } from '../../store/reducers/accountSlice';
+import { getCookie } from '../../utils';
 
 type Account = {
     userName: string | undefined,
@@ -34,6 +35,18 @@ export const Login = () => {
     const navigate = useNavigate();
     const [account, setAccount] = useState<Account | null>(null);
     const [isCorrect, setIsCorrect] = useState(true)
+
+    const infoAccountLoginWithId = useCallback(async () => {
+        const res = getCookie('isLogin')
+        if (res === null || res === undefined) return;
+        const accountInfo = await getDocumentWithId(res, 'accounts') as account;
+        if (accountInfo?.id === undefined) return;
+        dispatch(changeAccountLogin(accountInfo))
+        return navigate('/thongke');
+    }, [dispatch, navigate])
+
+    useEffect(() => { infoAccountLoginWithId() }, [infoAccountLoginWithId])
+
 
     const handleClick = async () => {
         if (account === null || account.userName === undefined || account.password === undefined) {

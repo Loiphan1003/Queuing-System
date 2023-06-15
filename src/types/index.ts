@@ -22,6 +22,7 @@ export interface service{
     serviceName: string,
     description: string,
     activeStatus: string,
+    dateCreate: string,
     rule: {name: string, value: string | number}[],
 }
 
@@ -47,7 +48,7 @@ export interface role {
 
 export interface NumberLevel {
     id: string,
-    stt: number,
+    stt: string,
     customer: string,
     device: string,
     service: string,
@@ -70,4 +71,19 @@ export interface DateType {
     day: number,
     month: number,
     year: number
+}
+
+export interface ServiceListUse {
+    id: string,
+    sequenceNumber: string,
+    status: string
+}
+
+export interface report {
+    number: string,
+    name: string,
+    date: string,
+    status: string,
+    device: string,
+
 }

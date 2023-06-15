@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styles from "./devices.module.css";
 import { ButtonAdd, Dropdown, SearchText, Pagination } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
-import { addDevice, addDeviceFilter, changeFilter, getAllDevices } from "../../store/reducers/devicesSlice";
+import { addDevice, addDeviceFilter, changeFilter } from "../../store/reducers/devicesSlice";
 import { RootState } from "../../store/store";
 import { addValue } from "../../store/reducers/breadcrumbSlice";
 import { Info } from "./Info";
@@ -44,10 +44,6 @@ export const Devices = () => {
     if (dataFilter.length === 0) return Math.ceil(devicesState.length / PER_PAGE);
     return Math.ceil(dataFilter.length / PER_PAGE);
   }
-
-  useEffect(() => {
-    dispatch(getAllDevices())
-  }, [dispatch])
 
   const getElementAtEndOfBreadscrum = useCallback(
     () => {

@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
 import { ButtonAdd, DateButton, Dropdown, Pagination, SearchText } from '../../components'
 import styles from './service.module.css';
-// import { addDatas } from '../../config/firebase/firestore';
-// import { service } from '../../types';
 import { getAllServices, setFilterServices, setService, updateIsFilterService } from '../../store/reducers/serviceSlice';
 import { checkTableHeader } from '../../utils';
 import { addValue } from '../../store/reducers/breadcrumbSlice';
@@ -22,11 +20,11 @@ export const Service = () => {
   const isFilterState = useSelector((state: RootState) => state.service.isFilter);
   const servicesFilterState = useSelector((state: RootState) => state.service.filterServices);
   const [displayPage, setDisplayPage] = useState<string>("");
-  const [filter, setFilter] = useState({
-    status: '',
-    date: '',
-    searchText: '',
-  });
+  
+  const [dateFilter, setDateFilter] = useState({
+    dateStart: '',
+    dateEnd: '',
+  })
   const dispatch = useDispatch<any>();
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -44,15 +42,9 @@ export const Service = () => {
     if (getLocation !== undefined) return setDisplayPage(getLocation.title);
   }, [breadScrumbState, dispatch])
 
-
-
   const handlePageClick = (data: any) => {
     setCurrentPage(data.selected);
   };
-
-  const changeFilterState = (value: string, type: string) => {
-    return setFilter({ ...filter, [type]: value })
-  }
 
   const checkStatus = (text: string) => {
     if (text === "Hoạt động" || text === "Kết nối") return `${styles.green}`;
@@ -71,24 +63,50 @@ export const Service = () => {
     dispatch(addValue(item))
   }
 
-  const handleFilter = useCallback(
-    () => {
+  const handleFilter = 
+    (value: string) => {
       let res: service[] = [];
-      if (!filter.status.match("Tất cả")) {
-        res = servicesState.filter((item) => { return item.activeStatus.match(filter.status) })
-        dispatch(updateIsFilterService(true));
-        return dispatch(setFilterServices(res));
+      
+      if (!value.match("Tất cả")) {
+        res = servicesState.filter((item) => { return item.activeStatus.match(value) })
+        dispatch(setFilterServices(res));
+        return dispatch(updateIsFilterService(true));
       }
-      if (filter.status.match("Tất cả")) {
+      if (value === "Tất cả") {
+        console.log('run');
+        
         return dispatch(updateIsFilterService(false));
       }
-    }, [dispatch, filter.status, servicesState]
-  )
+    }
+  
+  const handleFilterDate = useCallback((value: { dateStart: string, dateEnd: string }) => {
+    const dateStart = new Date(value.dateStart);
+    const dateEnd = new Date(value.dateEnd);
+
+    const res: service[] = [];
+    servicesState.forEach((item: service) => {
+      const date = new Date(item.dateCreate);
+      if (
+        (dateStart.getDate() <= date.getDate() && dateStart.getMonth() <= date.getMonth() && dateStart.getFullYear() <= date.getFullYear())
+        ||
+        (dateEnd.getDate() >= date.getDate() && dateEnd.getMonth() >= date.getMonth() && dateEnd.getFullYear() >= date.getFullYear())
+      ) {
+        return res.push(item);
+      }
+      return;
+    })
+
+    if(value.dateEnd === '' && value.dateStart === '') return;
+    if (res.length === 0 && isFilterState) {
+      dispatch(setFilterServices(res));
+    };
+    dispatch(updateIsFilterService(true));
+    dispatch(setFilterServices(res));
+  }, [servicesState, dispatch, isFilterState])
 
   useEffect(() => {
-    handleFilter()
-  }, [handleFilter])
-
+    handleFilterDate(dateFilter)
+  }, [handleFilterDate, dateFilter])
 
   const handleSearchText = (value: string) => {
     let res: service[] = [];
@@ -96,7 +114,7 @@ export const Service = () => {
       res = servicesState.filter((item) => { return item.serviceName.includes(value) })
       dispatch(updateIsFilterService(true));
       return dispatch(setFilterServices(res));
-    }else {
+    } else {
       dispatch(updateIsFilterService(false));
     }
   }
@@ -105,7 +123,7 @@ export const Service = () => {
     dispatch(addValue({ title: "Thêm dịch vụ", path: '' }))
   }
   return (
-    <div>
+    <div className={styles.serviceContainer} >
       <h2>Quản lý dịch vụ</h2>
       {displayPage === "Danh sách dịch vụ" &&
         <React.Fragment>
@@ -119,13 +137,15 @@ export const Service = () => {
                     data={["Tất cả", "Hoạt động", "Ngưng hoạt động"]}
                     value=''
                     setWidth='200'
-                    onClick={(value) => changeFilterState(value, 'status')}
+                    onClick={(value) => handleFilter(value)}
                   />
                 </div>
 
                 <div>
                   <p>Chọn thời gian</p>
-                  <DateButton />
+                  <DateButton
+                    onClick={(value) => setDateFilter(value)}
+                  />
                 </div>
 
               </div>
