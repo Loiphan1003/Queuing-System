@@ -1,6 +1,5 @@
 import axios from "axios";
 import { history } from "../types";
-import { addData } from "../config/firebase/firestore";
 
 export const checkTableHeader = (header: string) => {
     if (header.includes("nút")) return false;

@@ -7,6 +7,7 @@ import roleSlice from "./reducers/roleSlice";
 import numberLevelSlice from "./reducers/numberLevelSlice";
 import reportSlice from "./reducers/reportSlice";
 import historySlice from "./reducers/historySlice";
+import dashboardSlice from "./reducers/dashboardSlice";
 
 const store = configureStore({
     reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
         numberLevel: numberLevelSlice,
         report: reportSlice,
         history: historySlice,
+        dashboard: dashboardSlice,
     }
 })
 

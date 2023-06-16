@@ -125,11 +125,14 @@ export const DashboardLayout = (props: DashboardLayoutProps) => {
         return Math.round(result);
     }
 
-    // useEffect(() => {
-    //     const t = filterDevicesState('numberLevel',"Đang chờ")
-    //     console.log(t);
-
-    // } , [])
+    const handleDisplayValueWithType = (type: string) => {
+        let res: NumberLevel[] = [];
+        if(type === "numberUsed") res = numberLevelsState;
+        if(type === "waitting") res = numberLevelsState.filter((item) => { return item.status === "Đang chờ" });
+        if(type === "wasUse") res = numberLevelsState.filter((item) => { return item.status === "Đã sử dụng" });
+        if(type === "skip") res = numberLevelsState.filter((item) => { return item.status === "Bỏ qua" });
+        return res.length
+    }
 
     return (
         <div className={styles.container}>
@@ -193,7 +196,7 @@ export const DashboardLayout = (props: DashboardLayoutProps) => {
                             </div>
 
                             <div>
-                                <p>{devicesState.length}</p>
+                                <p>{handleDisplayValueWithType('numberUsed')}</p>
                                 <div>
                                     <p>32.41%</p>
                                 </div>
@@ -219,7 +222,7 @@ export const DashboardLayout = (props: DashboardLayoutProps) => {
                             </div>
 
                             <div>
-                                <p>3.721</p>
+                                <p>{handleDisplayValueWithType('wasUsed')}</p>
                                 <div>
                                     <p>32.41%</p>
                                 </div>
@@ -239,7 +242,7 @@ export const DashboardLayout = (props: DashboardLayoutProps) => {
                             </div>
 
                             <div>
-                                <p>468</p>
+                                <p>{handleDisplayValueWithType('waitting')}</p>
                                 <div>
                                     <p>32.41%</p>
                                 </div>
@@ -258,7 +261,7 @@ export const DashboardLayout = (props: DashboardLayoutProps) => {
                             </div>
 
                             <div>
-                                <p>32</p>
+                                <p>{handleDisplayValueWithType('skip')}</p>
                                 <div>
                                     <p>32.41%</p>
                                 </div>

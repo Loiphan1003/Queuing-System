@@ -4,17 +4,49 @@ import LogoAlta from '../../assets/images/Logo_alta.svg'
 import ForgotPassBackground from '../../assets/images/ForgotPassBackground.svg';
 import { Input, ButtonOutline, Button, PasswordInput } from '../../components';
 import { useNavigate } from "react-router-dom"
+import { getAllDataInColection, getDocumentWithId, updateData } from '../../config/firebase/firestore';
+import { account } from '../../types';
 
 export const ForgotPassword = () => {
 
     const navigate = useNavigate();
     const [inputPassword, setInputPassword] = useState<string | null>();
+    const [error, setError] = useState<boolean>(true);
     const [changePassword, setChangePassword] = useState<boolean>(false);
+    const [newPassword, setNewPassword] = useState({
+        newPass: '',
+        newPassAgain: '',
+    })
 
-    const handleClickButton = () => {
-        // if(inputPassword !== null && inputPassword?.includes("@")) return navigate('/')
-        // return navigate('/')
-        setChangePassword(true);
+    const handleClickButton = async () => {
+
+        if (inputPassword === undefined || !inputPassword?.includes("@")) return setError(false);
+        let idAccount: string = '';
+        const res = await getAllDataInColection('accounts');
+        res.forEach((item: account) => {
+            if (item.email === inputPassword) {
+                return idAccount = item.id;
+            }
+            return;
+        })
+        if (idAccount === '') return setError(false);
+        setError(true);
+        localStorage.setItem('ChangePassword', idAccount);
+        return setChangePassword(true);
+    }
+
+    const handleChangePassword = async () => {
+        if(newPassword.newPass === '' || newPassword.newPassAgain === '') return setError(false)
+        if(newPassword.newPass !== newPassword.newPassAgain) return setError(false);
+        const id = localStorage.getItem('ChangePassword');
+        if(id === null) return setChangePassword(false);
+        const account: account = await getDocumentWithId(id, 'accounts');
+        account.password = newPassword.newPass;
+        const res = await updateData(account, 'accounts')
+        if(res === null) return setError(false);
+        setError(true);
+        localStorage.removeItem('ChangePassword')
+        return navigate('/');
     }
 
     return (
@@ -26,7 +58,7 @@ export const ForgotPassword = () => {
                     <h1>Đặt lại mật khẩu</h1>
                     <p>Vui lòng nhập email để đặt lại mật khẩu của bạn *</p>
                     <Input
-                        status={true}
+                        status={error}
                         placeholder=''
                         value=''
                         handleChange={(e) => setInputPassword(e.target.value)}
@@ -45,23 +77,27 @@ export const ForgotPassword = () => {
                     <h1>Đặt lại mật khẩu mới</h1>
                     <div>
                         <label>Mật khẩu</label>
-                        <PasswordInput 
-                            status={true} 
+                        <PasswordInput
+                            status={error}
                             value=''
-                            handleChange={(e) => console.log(e.target.value)}
+                            handleChange={(e) => 
+                                setNewPassword({...newPassword, newPass: e.target.value})
+                            }
                         />
                     </div>
 
                     <div>
                         <label>Nhập lại mật khẩu</label>
-                        <PasswordInput 
-                            status={true} 
+                        <PasswordInput
+                            status={error}
                             value=''
-                            handleChange={(e) => console.log(e.target.value)}
+                            handleChange={(e) => 
+                                setNewPassword({...newPassword, newPassAgain: e.target.value})
+                            }
                         />
                     </div>
 
-                    <Button text='Xác nhận' handleClick={() => navigate('/')} />
+                    <Button text='Xác nhận' handleClick={() => handleChangePassword()} />
                 </>
 
                 }

@@ -41,6 +41,7 @@ export const updateData = async (
         await setDoc(doc(db, nameColection, id), value);
         return data as device & account & service;
     } catch (error) {
+        console.log(error);
         return null;
     }
 };
