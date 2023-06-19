@@ -7,11 +7,11 @@ import {
     setDoc,
     where,
 } from "firebase/firestore";
-import { NumberLevel, account, device, history, role, service } from "../../types";
+import { NumberLevel, account, device, history, notification, role, service } from "../../types";
 import { db } from "./index";
 
 export const addData = async (
-    data: device | account | role | service | NumberLevel | history,
+    data: device | account | role | service | NumberLevel | history | notification,
     nameColection: string
 ) => {
     try {
@@ -81,3 +81,32 @@ export const getListNumberLevelOfService = async (type: string) => {
         return [];
     }
 };
+
+export const updateNumberUseInRole = async (oldRole: string, newRole: string) => {
+    const roles: role[] = await  getAllDataInColection('roles');
+    const rolesUpdate: role[] = [];
+    let roleUpdate: role = {
+        id: "",
+        roleName: "",
+        numberPeopleUse: 0,
+        description: "",
+        features: []
+    }
+    roles.forEach((item) => { 
+        if(item.roleName === oldRole){
+            roleUpdate = item;
+            roleUpdate.numberPeopleUse = roleUpdate.numberPeopleUse - 1
+            rolesUpdate.push(roleUpdate);  
+        } 
+        if(item.roleName === newRole){
+            roleUpdate = item;
+            roleUpdate.numberPeopleUse = roleUpdate.numberPeopleUse + 1
+            rolesUpdate.push(roleUpdate);  
+        } 
+    });
+
+    rolesUpdate.map( async (item) => {
+        await updateData(item, 'roles');
+    })
+    return rolesUpdate;
+}

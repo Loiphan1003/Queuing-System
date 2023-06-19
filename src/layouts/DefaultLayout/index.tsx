@@ -13,8 +13,6 @@ import { changeAccountLogin } from '../../store/reducers/accountSlice';
 import { getAllRole } from '../../store/reducers/roleSlice';
 import { getAllServices } from '../../store/reducers/serviceSlice';
 import { getAllDevices } from '../../store/reducers/devicesSlice';
-// import { collection, query, where, getDocs } from "firebase/firestore";
-// import { db } from '../../config/firebase';
 
 
 type DefaultLayoutProps = {
@@ -129,7 +127,6 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
       temp = [{ title: "Cấp số" }, { title: "Danh sách cấp số", path: '/capso' }] as { title: string, path: string }[];
     }
     if (name.includes("Cài đặt")) return setOpenSetting(true);
-
     setOpenSetting(false)
     dispatch(changeValue(temp));
     return navigate(path);
@@ -157,7 +154,10 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
     dispatch(changeAccountLogin(accountInfo))
   }, [dispatch, navigate])
 
-  const getLocation = useCallback(() => {
+  useEffect(() => { infoAccountLoginWithId() }, [infoAccountLoginWithId])
+  
+  const getLocation = useCallback(async () => {
+    const getIdUserLogin = await getCookie('isLogin');
     const urlPathName = location.pathname;
     breadcrumbData.forEach((item) => {
       if (item.path === urlPathName) {
@@ -165,19 +165,12 @@ export const DefaultLayout = (props: DefaultLayoutProps) => {
       }
     })
 
-    if (urlPathName === '/capso') {
-      console.log("run");
+    if (urlPathName === '/capso' && getIdUserLogin === null && getIdUserLogin === undefined) {
+      dispatch(addValue({title: "Cấp số mới", path: ''}))
       return navigate('/capso')
     }
-    else {
-      infoAccountLoginWithId();
-    }
 
-  }, [location.pathname, dispatch])
-
-
-
-  // useEffect(() => { infoAccountLoginWithId() }, [infoAccountLoginWithId])
+  }, [location.pathname, dispatch, navigate])
 
   useEffect(() => {
     getLocation()

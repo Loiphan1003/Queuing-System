@@ -163,6 +163,7 @@ export const CapSo = () => {
                 data={displayServiceForSelectBox()}
                 setWidth='170'
                 value={''}
+                text="Tất cả"
                 onClick={(value) => handleFilter(value, 'service')}
               />
             </div>
@@ -173,6 +174,7 @@ export const CapSo = () => {
                 data={["Tất cả", "Đang chờ", "Đã sử dụng", "Bỏ qua"]}
                 setWidth='150'
                 value={''}
+                text="Tất cả"
                 onClick={(value) => handleFilter(value, 'status')}
               />
             </div>
@@ -183,6 +185,7 @@ export const CapSo = () => {
                 data={displayDeviceForSelectBox()}
                 setWidth='200'
                 value={''}
+                text="Tất cả"
                 onClick={(value) => handleFilter(value, 'device')}
               />
             </div>

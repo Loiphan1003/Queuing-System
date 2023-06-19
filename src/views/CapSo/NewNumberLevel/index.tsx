@@ -3,18 +3,23 @@ import { Button, ButtonOutline, Dropdown } from '../../../components'
 import styles from './newNumberLevel.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { getCurrentTimeOrTimeExpire, removeLastItemBreadScrumb } from '../../../utils';
+import { getCookie, getCurrentTimeOrTimeExpire, removeLastItemBreadScrumb } from '../../../utils';
 import { changeValue } from '../../../store/reducers/breadcrumbSlice';
-import { NumberLevel, device, service } from '../../../types';
+import { NumberLevel, device, notification, service } from '../../../types';
 import { addData, getAllDataInColection } from '../../../config/firebase/firestore';
 import { addNumberLevels } from '../../../store/reducers/numberLevelSlice';
+import { useNavigate } from 'react-router-dom';
+import { updateNotifications } from '../../../store/reducers/notificationSlice';
 
 export const NewNumberLevel = () => {
 
     const breadcrumbState = useSelector((state: RootState) => state.breadcrumb.value);
     const servicesState = useSelector((state: RootState) => state.service.services);
     const accountState = useSelector((state: RootState) => state.account.accountLogin);
+    const notificationsState = useSelector((state: RootState) => state.notification.notifications);
+    
     const dispatch = useDispatch<any>();
+    const nagivate = useNavigate();
 
 
     const [service, setService] = useState<service>({
@@ -28,6 +33,8 @@ export const NewNumberLevel = () => {
     });
 
     const handleCancel = () => {
+        const checkUserLogin = getCookie('isLogin');
+        if(checkUserLogin === null || checkUserLogin === undefined) return nagivate('/')
         const res = removeLastItemBreadScrumb(breadcrumbState);
         return dispatch(changeValue(res.newArray));
     }
@@ -78,10 +85,19 @@ export const NewNumberLevel = () => {
         }
         if (rule.toString().match("Tăng tự động từ:")) {
             const lastStt = listSTT[listSTT.length - 1]
+            if(lastStt === undefined) return stt;
             const lastSurfix = lastStt.toString().split(service.serviceCode)[1];
             stt = (Number.parseInt(stt) + Number.parseInt(lastSurfix)).toString();
         }
         return stt;
+    }
+
+    const handleAddAndSort = (value: notification, notifications: notification[]) => {
+        const list = [];
+        notifications.forEach((item) => list.push(item))
+        list.push(value)
+        list.sort((a,b) => { return Date.parse(b.time) - Date.parse(a.time) })
+        return list
     }
 
     const handleAddNewNumber = async () => {
@@ -111,7 +127,19 @@ export const NewNumberLevel = () => {
         const res = await addData(newNumber, 'numberLevels');
         if(res.status !== true) return;
         dispatch(addNumberLevels(res.data))
-        handleCancel();
+
+        const noti: notification = {
+            id: '',
+            time: new Date().toUTCString(),
+            usernameRecive: accountState.fullname
+        }
+        const resAddNotification = await addData(noti, 'notifications');
+        if(resAddNotification.status !== true) return;
+        
+        const updateNotificationsState: notification[] =  handleAddAndSort(resAddNotification.data as notification, notificationsState)
+        dispatch(updateNotifications(updateNotificationsState))
+        const updateBreadscrum = removeLastItemBreadScrumb(breadcrumbState);
+        return dispatch(changeValue(updateBreadscrum.newArray));
     }
 
     return (
@@ -121,6 +149,7 @@ export const NewNumberLevel = () => {
             <Dropdown
                 value={''}
                 setWidth='300'
+                text="Chọn dịch vụ"
                 onClick={(value) => handleClickDropdown(value)}
                 data={displayServiceForDropdown()}
             />

@@ -7,6 +7,7 @@ type CalendarProps = {
     open: (value: boolean) => void,
     onClick: (date: {dateStart: string, dateEnd: string}) => void,
     typeSelect: number,
+    value: string,
 }
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -108,7 +109,7 @@ export const Calendar = (props: CalendarProps) => {
                             <div 
                                 key={index}
                                 className={
-                                    (date.dateStart === dateItem.toUTCString() || date.dateEnd === dateItem.toUTCString()) 
+                                    (date.dateStart === dateItem.toUTCString() || date.dateEnd === dateItem.toUTCString() || props.value === dateItem.toUTCString() )
                                     ? styles.active 
                                     : ((dateItem.getDate() > new Date(date.dateStart).getDate() && dateItem.getDate() < new Date(date.dateEnd).getDate())? styles.listDate : styles.date)} 
                                 onClick={() => handleChangeDate(dateItem.toUTCString())}

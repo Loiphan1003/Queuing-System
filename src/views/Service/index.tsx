@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
 import { ButtonAdd, DateButton, Dropdown, Pagination, SearchText } from '../../components'
 import styles from './service.module.css';
-import { getAllServices, setFilterServices, setService, updateIsFilterService } from '../../store/reducers/serviceSlice';
+import { setFilterServices, setService, updateIsFilterService } from '../../store/reducers/serviceSlice';
 import { checkTableHeader } from '../../utils';
 import { addValue } from '../../store/reducers/breadcrumbSlice';
 import { Info } from './Info';
@@ -37,7 +37,6 @@ export const Service = () => {
   }
 
   useEffect(() => {
-    dispatch(getAllServices())
     const getLocation = breadScrumbState[breadScrumbState.length - 1] as { title: string, path: string };
     if (getLocation !== undefined) return setDisplayPage(getLocation.title);
   }, [breadScrumbState, dispatch])
@@ -136,6 +135,7 @@ export const Service = () => {
                   <Dropdown
                     data={["Tất cả", "Hoạt động", "Ngưng hoạt động"]}
                     value=''
+                    text="Tất cả"
                     setWidth='200'
                     onClick={(value) => handleFilter(value)}
                   />

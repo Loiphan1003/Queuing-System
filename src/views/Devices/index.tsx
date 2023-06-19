@@ -144,6 +144,7 @@ export const Devices = () => {
                     setWidth="200"
                     value=""
                     data={["Tất cả", "Hoạt động", "Ngưng hoạt động"]}
+                    text="Tất cả"
                     onClick={(value) => handleChangeFilter("active", value)}
                   />
                 </div>
@@ -154,6 +155,7 @@ export const Devices = () => {
                     setWidth="200"
                     value=""
                     data={["Tất cả", "Kết nối", "Mất kết nối"]}
+                    text="Tất cả"
                     onClick={(value) => handleChangeFilter("connect", value)}
                   />
                 </div>

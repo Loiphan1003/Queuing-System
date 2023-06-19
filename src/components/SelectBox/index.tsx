@@ -18,13 +18,14 @@ export const SelectBox = (props: SelectBoxType) => {
     if (displayService.length === 0) {
       setDisplayService(props.data);
     }
-    if(props.value.length !== 0) {
-      setServices(props.value)
-    }
+    // if(props.value.length !== 0) {
+    //   setServices(props.value)
+    // }
   }, [props.data, displayService.length, props.value.length, props.value])
 
 
   const handleSelect = (service: string) => {
+    
     if (service.includes("Tất cả")) {
       if (services.length !== 0) {
         displayService.forEach(item => {
@@ -32,7 +33,6 @@ export const SelectBox = (props: SelectBoxType) => {
             setServices([...services, item])
           }
         })
-        setIsClick(false);
         return setDisplayService(["Tất cả"]);
       }
       setIsClick(false);
@@ -45,7 +45,6 @@ export const SelectBox = (props: SelectBoxType) => {
   }
 
   const handleDelete = (service: string) => {
-    setDisplayService([...displayService, service])
     const filter = services.filter(item => { return item !== service });
     setServices(filter);
   }
@@ -62,7 +61,7 @@ export const SelectBox = (props: SelectBoxType) => {
         {services?.length === 0 ?
           <div
             className={styles.input}
-          // onClick={() => setIsClick(true)}
+          onClick={() => setIsClick(true)}
           >
             <p>Nhập dịch vụ</p>
           </div>

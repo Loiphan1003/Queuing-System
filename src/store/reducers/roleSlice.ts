@@ -15,6 +15,17 @@ export const getAllRole = createAsyncThunk(
     }
 )
 
+export const updateAllRoles = createAsyncThunk(
+    "Role: UPDATE ALL",
+    async (rolesUpdate, roles) => {
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+)
+
 
 type roleSliceType = {
     roles: role[],

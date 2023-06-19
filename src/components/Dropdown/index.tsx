@@ -6,6 +6,7 @@ type DropdownType = {
     data: string[],
     onClick: (value: string) => void,
     setWidth: string,
+    text: string,
     value: string | undefined | null,
 }
 
@@ -16,7 +17,6 @@ export const Dropdown = (props: DropdownType) => {
 
     useEffect(() => {
         if (props.value !== "" && props.value !== undefined && props.value !== null) return setText(props.value);
-        // return setText(props.data[0])
     }, [props.value])
 
 
@@ -31,7 +31,7 @@ export const Dropdown = (props: DropdownType) => {
                     setIsSelect(!isSelect)
                 }}
             >
-                <p>{text}</p>
+                <p>{text === '' && props.text !== '' ? props.text : text}</p>
                 <div className={isSelect ? styles.spin : ''} >
                     <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L7 7L13 1" fill="#FF7506" />

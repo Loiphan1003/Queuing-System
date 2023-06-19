@@ -212,7 +212,7 @@
 }
 
 .settingBtn {
-    position: absolute;
+    position: fixed;
     width: 200px;
     height: 144px;
     background-color: white;

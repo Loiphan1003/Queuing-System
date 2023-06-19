@@ -85,5 +85,10 @@ export interface report {
     date: string,
     status: string,
     device: string,
+}
 
+export interface notification {
+    id: string,
+    usernameRecive: string,
+    time: string
 }

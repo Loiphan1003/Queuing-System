@@ -141,6 +141,7 @@ export const Info = () => {
                             <Dropdown 
                                 data={["Hoạt động", "Ngưng hoạt động"]}
                                 setWidth='200'
+                                text=''
                                 value={service.activeStatus}
                                 onClick={(value) => handleChange('activeStatus', value)}
                             />

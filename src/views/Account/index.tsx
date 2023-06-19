@@ -112,6 +112,7 @@ export const Account = () => {
                 setWidth='200'
                 data={getNameRoles()}
                 value={filterRole}
+                text=''
                 onClick={(value) => setFilterRole(value)}
               />
             </div>

@@ -49,7 +49,7 @@ const menubar = [
     },
 ]
 
-const menubarWithOutLogin = [
+const menubarWithoutLogin = [
     {
         text: "Cấp số",
         img: CapSoIcon,
@@ -74,15 +74,26 @@ export const Menubar = (props: MenuBarProps) => {
 
     const navigate = useNavigate();
     const state = useSelector((state: RootState) => state.breadcrumb.value);
-    const accountLoginState = useSelector((state: RootState) => state.account.accountLogin);
 
     const location = useLocation()
     const [selected, setSelected] = useState<string>("");
+    const [isLogin, setIsLogin] = useState<boolean>(false);
 
     const handleClick = (array: stateModel[], text: string) => {
         if (checkIsSelect(array, text)) return setSelected(text)
         else return setSelected('')
     }
+
+    const userIsLoginOrNot = useCallback(() => {
+        const res = getCookie('isLogin');
+        if (res === null || res === undefined) return setIsLogin(false);
+        return setIsLogin(true);
+    }, [])
+
+    useEffect(() => {
+        userIsLoginOrNot()
+    }, [userIsLoginOrNot])
+
 
     const getLocation = useCallback(() => {
         const getUrlLocationPathName = location.pathname;
@@ -115,7 +126,7 @@ export const Menubar = (props: MenuBarProps) => {
         const updateStatus = await updateData(account, 'accounts')
         if (updateStatus === null) return;
         document.cookie = "isLogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        navigate('/')
+        return navigate('/');
     }
 
     return (
@@ -125,7 +136,7 @@ export const Menubar = (props: MenuBarProps) => {
                 <img src={AltaLogo} alt="logo" />
 
                 <div className={styles.listBtn}>
-                    {accountLoginState.id !== '' && menubar.map(item => (
+                    {isLogin === true && menubar.map(item => (
                         <div
                             key={item.text}
                             className={selected === item.text ? styles.btnActive : styles.btn}
@@ -139,7 +150,7 @@ export const Menubar = (props: MenuBarProps) => {
                         </div>
                     ))}
 
-                    {accountLoginState.id === '' && menubarWithOutLogin.map(item => (
+                    {isLogin === false && menubarWithoutLogin.map(item => (
                         <div
                             key={item.text}
                             className={selected === item.text ? styles.btnActive : styles.btn}
@@ -153,7 +164,7 @@ export const Menubar = (props: MenuBarProps) => {
                         </div>
                     ))}
 
-                    {accountLoginState.id !== '' &&
+                    {isLogin === true &&
                         <div
                             className={selected.includes("Cài đặt") ? styles.btnActive : styles.btn}
                             onClick={() => {
@@ -169,7 +180,7 @@ export const Menubar = (props: MenuBarProps) => {
                 </div>
             </div>
 
-            {accountLoginState.id !== '' &&
+            {isLogin === true &&
                 <div
                     className={styles.logoutBtn}
                     onClick={() => handleLogout()}

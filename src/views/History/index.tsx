@@ -38,9 +38,6 @@ export const History = () => {
     const dateStart = new Date(value.dateStart);
     const dateEnd = new Date(value.dateEnd);
 
-    console.log(dateEnd.getDate());
-    
-
     if (value.dateEnd === '' && value.dateStart === '') return;
     const res: history[] = [];
     historyState.forEach((item: history) => {
@@ -57,8 +54,6 @@ export const History = () => {
       return;
     })
 
-    console.log(res);
-    
     if (res.length === 0) dispatch(updateIsFilter(true));
     return dispatch(updateHistorysFilter(res));
   }, [historyState, dispatch,])

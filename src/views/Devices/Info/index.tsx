@@ -33,8 +33,11 @@ export const Info = () => {
     })
     const [services, setServices] = useState<string[]>([
         "Tất cả"
-        // , "Khám sản phụ khoa", "Khám răng hàm mặt", "Khám tai mũi họng", "Khám hô hấp", "Khám tổng quát"
     ])
+
+    // useEffect(() => {
+    //     console.log(services);
+    // }, [services])
 
     const getTextButton = () => {
         let text: string = "";
@@ -66,6 +69,8 @@ export const Info = () => {
         let serviceUse: string = '';
         if(item.includes("Tất cả")){
             const removeFirstIndex = services.filter(i => { return i !== "Tất cả" })
+            console.log(removeFirstIndex);
+            
             const data: string = removeFirstIndex.join(", ")
             return setDevice({...device, deviceUse: data});
         }
@@ -79,7 +84,7 @@ export const Info = () => {
     }
 
     const handleChangeDeleteServiceUse = (item: string) => {
-        const deleteTheItem = device.deviceUse.replace(`${item},`, '')
+        const deleteTheItem = device.deviceUse.replace(`${item.trim()},`, '')
         setDevice({...device, 'deviceUse': deleteTheItem})
     }
 
@@ -101,14 +106,14 @@ export const Info = () => {
         const getType = breadcrumbSate[breadcrumbSate.length - 1] as {title: string, path: string};
         if(getType.title.includes("Thêm thiết bị")){
             const res = await addData(device, 'devices');
+            if(res.status === false ) return;
+            dispatch(changeValue(breadcrumbSate.filter(i => {return i.title.includes(getType.title) === false})))
         }
         else{
             const res = await updateData(device, 'devices');
             if(res === null) return;
             dispatch(changeValue(breadcrumbSate.filter(i => {return i.title.includes(getType.title) === false})))
         }
-        // console.log(device);
-        
     }
 
     useEffect(() => {
@@ -139,6 +144,7 @@ export const Info = () => {
                             setWidth='200'
                             value={device.deviceType}
                             data={["Kiosk","Display counter"]}
+                            text=''
                             onClick={(value) => handleChange('deviceType', value)}
                         />
                     </div>

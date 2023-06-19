@@ -12,15 +12,15 @@ export const Dashboard = () => {
   const numberLevelsState = useSelector((state: RootState) => state.numberLevel.numberLevels);
 
   const dispatch = useDispatch<any>();
-  const [watchType, setWatchType] = useState<string>('ngày');
+  const [watchType, setWatchType] = useState<string>('Ngày');
   const [displayDate, setDisplayDate] = useState<string>("");
 
 
   const handleDisplayDate = (value: string) => {
     const date = new Date();
     let res: string = '';
-    if(value === "Tháng") res = `Năm ${date.getFullYear()}`;
-    if(value === "Tuần" || value === "Ngày") res = `Tháng ${date.getMonth() + 1}/${date.getFullYear()}`;
+    if (value === "Tháng") res = `Năm ${date.getFullYear()}`;
+    if (value === "Tuần" || value === "Ngày") res = `Tháng ${date.getMonth() + 1}/${date.getFullYear()}`;
     setDisplayDate(res);
     setWatchType(value);
   }
@@ -28,7 +28,8 @@ export const Dashboard = () => {
   const checkExist = (list: { label: string, value: number }[], value: string) => {
     let status: boolean = false;
     list.forEach((item) => {
-      if (item.label === value) {
+      const date = new Date(item.label)
+      if (item.label === value && date.getMonth() === new Date(value).getMonth()) {
         item.value++;
         return status = true
       }
@@ -99,7 +100,7 @@ export const Dashboard = () => {
       })
     })
 
-    
+
     return result;
   }
 
@@ -111,16 +112,16 @@ export const Dashboard = () => {
       numberLevelsState.forEach((item) => {
         const date = getOnlyDate(item.timeuse, 'ahourAndDAte');
         if (date !== undefined) {
-          if (result.length === 0 && watchType === "Ngày"){
-            if(date.getFullYear() !== currentDate.getFullYear() && 
+          if (result.length === 0 && watchType === "Ngày") {
+            if (date.getFullYear() !== currentDate.getFullYear() &&
               date.getMonth() !== (currentDate.getMonth() + 1)) return;
-            result.push({
+            return result.push({
               label: date.toUTCString(),
               value: 1
             })
-          } 
-          if(result.length === 0 && watchType === "Tháng"){
-            if(date.getFullYear() !== currentDate.getFullYear()) return;
+          }
+          if (result.length === 0 && watchType === "Tháng") {
+            if (date.getFullYear() !== currentDate.getFullYear()) return;
             return result.push({
               label: date.toUTCString(),
               value: 1
@@ -134,15 +135,25 @@ export const Dashboard = () => {
           checkExist(result, date.toUTCString())
         }
       })
-      result.sort((a, b) => {
-        const aDate = Date.parse(a.label);
-        const bDate = Date.parse(b.label);
-        if (isNaN(aDate) || isNaN(bDate)) {
-          return 0;
-        }
-        return aDate - bDate;
-      })
+      if (watchType === "Ngày") {
+        result.sort((a, b) => {
+          const aDate = new Date(a.label);
+          const bDate = new Date(b.label);
+          return aDate.getDate() - bDate.getDate();
+        })
+      }
+      if (watchType === "Tháng") {
+        result.sort((a, b) => {
+          const aDate = Date.parse(a.label);
+          const bDate = Date.parse(b.label);
+          console.log(aDate);
 
+          if (isNaN(aDate) || isNaN(bDate)) {
+            return 0;
+          }
+          return aDate - bDate;
+        })
+      }
       return dispatch(updateDataDashboard(result))
     }
     const dates: Date[] = [];
@@ -179,6 +190,7 @@ export const Dashboard = () => {
               data={["Ngày", "Tuần", "Tháng"]}
               setWidth={'106'}
               value={''}
+              text='Ngày'
               onClick={(value) => handleDisplayDate(value)}
             />
           </div>

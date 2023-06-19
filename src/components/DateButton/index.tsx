@@ -84,6 +84,7 @@ export const DateButton = (props: DateButtonProps) => {
                     open={(value) => setOpenCalendar(value)}
                     onClick={(date) => setDisplayDate(date)}
                     typeSelect={2}
+                    value=''
                 />
             }
         </div>

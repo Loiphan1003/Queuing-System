@@ -7,7 +7,7 @@ import { RootState } from '../../../store/store';
 import { changeValue } from '../../../store/reducers/breadcrumbSlice';
 import { account } from '../../../types';
 import { clearAccount, updateAccounts } from '../../../store/reducers/accountSlice';
-import { addData, updateData } from '../../../config/firebase/firestore';
+import { addData, updateData, updateNumberUseInRole } from '../../../config/firebase/firestore';
 
 type InfoProps = {
     data: account | null
@@ -17,7 +17,10 @@ export const Info = (props: InfoProps) => {
 
     const breadcrumbState = useSelector((state: RootState) => state.breadcrumb.value);
     const accountsState = useSelector((state: RootState) => state.account.accounts);
+    const accountState = useSelector((state: RootState) => state.account.account);
     const rolesState = useSelector((state: RootState) => state.role.roles);
+
+
     const dispatch = useDispatch<any>();
     const [passwordAgain, setPasswordAgain] = useState<string>("");
     const [accountForm, setAccountForm] = useState<account>({
@@ -107,7 +110,8 @@ export const Info = (props: InfoProps) => {
                     }
                     newUpdateAccounts.push(item)
                 })
-
+                
+                await updateNumberUseInRole(accountState.role, accountForm.role)
                 dispatch(updateAccounts(newUpdateAccounts))
                 dispatch(changeValue(value.newArray))
             }
@@ -190,6 +194,7 @@ export const Info = (props: InfoProps) => {
                         <Dropdown
                             data={getNameRoles()}
                             setWidth='300'
+                            text=''
                             value={accountForm.role !== null ? accountForm.role : ''}
                             onClick={(value) => handleChangeAccountForm("role", value)}
                         />
@@ -200,6 +205,7 @@ export const Info = (props: InfoProps) => {
                         <Dropdown
                             data={["Tất cả", "Ngưng hoạt động", "Hoạt động"]}
                             setWidth='300'
+                            text="Tất cả"
                             value={accountForm.status !== null ? accountForm.status : ''}
                             onClick={(value) => handleChangeAccountForm("status", value)}
                         />

@@ -196,6 +196,7 @@ export const Detail = () => {
                         <Dropdown
                             data={["Tất cả", "Đã hoàn thành", "Đang thực hiện", "Vắng"]}
                             setWidth='130'
+                            text="Tất cả"
                             value={filterStatus}
                             onClick={(value) => setFilterStatus(value)}
                         />
